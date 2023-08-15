@@ -54,7 +54,6 @@ public class WorldEditUtils {
                 }
             }
         }
-        player.sendMessage(coordList.toString());
         return coordList;
     }
 }
