@@ -221,5 +221,6 @@ public class Effects extends JavaPlugin {
         commandParser.addCommand(new PermissionListCommand());
         commandParser.addCommand(new PermissionRemoveCommand());
         commandParser.addCommand(new EffectCreateSpawnFrogWithLivingEntityCommand());
+        commandParser.addCommand(new GenerateParticleCoordsCommand());
     }
 }

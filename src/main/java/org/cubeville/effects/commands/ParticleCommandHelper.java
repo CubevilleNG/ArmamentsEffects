@@ -3,34 +3,26 @@ package org.cubeville.effects.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import org.cubeville.commons.commands.Command;
-import org.cubeville.commons.commands.CommandParameterBoolean;
-import org.cubeville.commons.commands.CommandParameterDouble;
-import org.cubeville.commons.commands.CommandParameterEnum;
-import org.cubeville.commons.commands.CommandParameterInteger;
-import org.cubeville.commons.commands.CommandParameterList;
-import org.cubeville.commons.commands.CommandParameterListDouble;
-import org.cubeville.commons.commands.CommandParameterListInteger;
-import org.cubeville.commons.commands.CommandParameterListVector;
-import org.cubeville.commons.commands.CommandParameterType;
-import org.cubeville.commons.commands.CommandParameterVector;
+import org.cubeville.commons.commands.*;
 import org.cubeville.effects.managers.ParticleEffect;
 import org.cubeville.effects.managers.ParticleEffectComponent;
 import org.cubeville.effects.managers.ParticleEffectTimelineEntry;
-import org.cubeville.effects.managers.modifier.CoordinateModifierMove;
-import org.cubeville.effects.managers.modifier.CoordinateModifierRotate;
-import org.cubeville.effects.managers.modifier.CoordinateModifierScale;
-import org.cubeville.effects.managers.modifier.CoordinateModifierScale2d;
+import org.cubeville.effects.managers.modifier.*;
 import org.cubeville.effects.managers.sources.coordinate.CircleCoordinateSource;
 import org.cubeville.effects.managers.sources.coordinate.ConstantCoordinateSource;
 import org.cubeville.effects.managers.sources.coordinate.CoordinateSource;
 import org.cubeville.effects.managers.sources.coordinate.RandomCoordinateSource;
 import org.cubeville.effects.managers.sources.value.ValueSource;
+import org.cubeville.effects.util.WorldEditUtils;
 
 public class ParticleCommandHelper
 {
@@ -39,6 +31,8 @@ public class ParticleCommandHelper
         command.addParameter("constantsource", true, new CommandParameterListVector());
         command.addParameter("constantsource+", true, new CommandParameterListVector());
         command.addParameter("constantsource-", true, new CommandParameterListInteger(1));
+        command.addParameter("presetconstantsource", true, new CommandParameterString());
+        command.addParameter("presetconstantsource+", true, new CommandParameterString());
         command.addParameter("constantsourcescale", true, new CommandParameterDouble());
         command.addParameter("constantsourcescalexy", true, new CommandParameterDouble());
         command.addParameter("circlesource", true, new CommandParameterListDouble(3));
@@ -65,6 +59,12 @@ public class ParticleCommandHelper
             pl.add(new CommandParameterBoolean());
             pl.add(new CommandParameterBoolean());
             command.addParameter("move+", true, new CommandParameterList(pl));
+        }
+        {
+            List<CommandParameterType> pl = new ArrayList<>();
+            pl.add(new CommandParameterValueSource());
+            pl.add(new CommandParameterString());
+            command.addParameter("advrotate+", true, new CommandParameterList(pl));
         }
         command.addParameter("scale+", true, new CommandParameterValueSource());
         {
@@ -95,11 +95,13 @@ public class ParticleCommandHelper
         if(parameters.containsKey("repeatoffset")) effect.setRepeatOffset((int) parameters.get("repeatoffset"));
     }
 
-    public static void setComponentValues(ParticleEffectComponent component, Map<String, Object> parameters) {
+    public static void setComponentValues(ParticleEffectComponent component, Map<String, Object> parameters, Player player) {
         int numberOfSources = 0;
         if(parameters.containsKey("constantsource")) numberOfSources++;
         if(parameters.containsKey("constantsource+")) numberOfSources++;
         if(parameters.containsKey("constantsource-")) numberOfSources++;
+        if(parameters.containsKey("presetconstantsource")) numberOfSources++;
+        if(parameters.containsKey("presetconstantsource+")) numberOfSources++;
         if(parameters.containsKey("circlesource")) numberOfSources++;
         if(parameters.containsKey("randomsource")) numberOfSources++;
         if(parameters.containsKey("circlesourcexz")) numberOfSources++;
@@ -133,6 +135,43 @@ public class ParticleCommandHelper
             }
             else {
                 throw new IllegalArgumentException("Can't remove coordinates, source is not constant!");
+            }
+        }
+
+        if(parameters.containsKey("presetconstantsource")) {
+            List<Vector> coords;
+            Pattern selPattern = Pattern.compile("selection\\((.*)\\)");
+            Matcher selMatcher = selPattern.matcher((String) parameters.get("presetconstantsource"));
+            if (parameters.get("presetconstantsource").equals("selection")) {
+                coords = WorldEditUtils.getSelectionCoordinates(player);
+            } else if (selMatcher.find()) {
+                String matArg = selMatcher.group(1);
+                coords = WorldEditUtils.getSelectionCoordinates(player, Material.matchMaterial(matArg));
+            } else {
+                throw new IllegalArgumentException("Invalid preset argument!");
+            }
+            component.setCoordinates(new ConstantCoordinateSource(coords));
+        }
+
+        if(parameters.containsKey("presetconstantsource+")) {
+            List<Vector> coords;
+            Pattern selPattern = Pattern.compile("selection\\((.*)\\)");
+            Matcher selMatcher = selPattern.matcher((String) parameters.get("presetconstantsource+"));
+            if (parameters.get("presetconstantsource+").equals("selection")) {
+                coords = WorldEditUtils.getSelectionCoordinates(player);
+            } else if (selMatcher.find()) {
+                String matArg = selMatcher.group(1);
+                coords = WorldEditUtils.getSelectionCoordinates(player, Material.matchMaterial(matArg));
+            } else {
+                throw new IllegalArgumentException("Invalid preset argument!");
+            }
+            CoordinateSource source = component.getCoordinates();
+            if(source instanceof ConstantCoordinateSource) {
+                ConstantCoordinateSource csource = (ConstantCoordinateSource) source;
+                csource.addVertices(coords);
+            }
+            else {
+                component.setCoordinates(new ConstantCoordinateSource(coords));
             }
         }
 
@@ -180,6 +219,17 @@ public class ParticleCommandHelper
         if(parameters.containsKey("rotate+")) {
             CoordinateModifierRotate modifier =
                 new CoordinateModifierRotate((ValueSource) parameters.get("rotate+"));
+            component.addModifier(modifier);
+        }
+
+        if(parameters.containsKey("advrotate+")) {
+            List<Object> pars = (List<Object>) parameters.get("advrotate+");
+            String axis = (String) pars.get(1);
+            if (!axis.equals("xy") && !axis.equals("xz") && !axis.equals("yz")) {
+                throw new IllegalArgumentException("Invalid rotation axis! Valid options: xy, xz, yz");
+            }
+            CoordinateModifierAdvRotate modifier =
+                    new CoordinateModifierAdvRotate((ValueSource) pars.get(0), (String) pars.get(1));
             component.addModifier(modifier);
         }
 

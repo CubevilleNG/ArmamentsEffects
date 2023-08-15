@@ -34,6 +34,7 @@ public class SerializationRegistration
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.SoundEffect.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.modifier.CoordinateModifierMove.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.modifier.CoordinateModifierRotate.class);
+        ConfigurationSerialization.registerClass(org.cubeville.effects.managers.modifier.CoordinateModifierAdvRotate.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.modifier.CoordinateModifierScale.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.modifier.CoordinateModifierScale2d.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.coordinate.CircleCoordinateSource.class);
