@@ -78,6 +78,9 @@ public class ParticleEffect extends EffectWithLocation
                 boolean entityCollisionCheck = component.getEntityCollisionCheck();
 
                 Location location = locationCalculator.getLocationForStep(step - component.getLocationOffset(localStep));
+
+                Vector spread = new Vector(component.getSpreadX().getValue(step), component.getSpreadY().getValue(step), component.getSpreadZ().getValue(step));
+                spread = transform(location.getYaw(), location.getPitch(), spread);
                 
                 for(Vector vec: component.getModifiedCoordinates(localStep)) {
                     Location nloc = location.clone();
@@ -172,22 +175,19 @@ public class ParticleEffect extends EffectWithLocation
                             dustoptions = new Particle.DustOptions(Color.fromRGB(red, green, blue), size);
 
                         nloc.getWorld().spawnParticle(component.getParticle(), nloc.getX(), nloc.getY(), nloc.getZ(), (int)(component.getCount().getValue(step)),
-                                                      component.getSpreadX().getValue(step), component.getSpreadY().getValue(step), component.getSpreadZ().getValue(step),
-                                                      speed, dustoptions);
+                                                      spread.getX(), spread.getY(), spread.getZ(), speed, dustoptions);
                     }
                     else if(component.getParticle() == Particle.ITEM_CRACK) {
                         nloc.getWorld().spawnParticle(component.getParticle(), nloc.getX(), nloc.getY(), nloc.getZ(), (int)(component.getCount().getValue(step)),
-                                                      component.getSpreadX().getValue(step), component.getSpreadY().getValue(step), component.getSpreadZ().getValue(step),
-                                                      speed, new ItemStack(component.getMaterial()));
+                                                      spread.getX(), spread.getY(), spread.getZ(), speed, new ItemStack(component.getMaterial()));
                     }
                     else if(component.getParticle() == Particle.BLOCK_DUST || component.getParticle() == Particle.BLOCK_CRACK || component.getParticle() == Particle.FALLING_DUST) {
                         nloc.getWorld().spawnParticle(component.getParticle(), nloc.getX(), nloc.getY(), nloc.getZ(), (int)(component.getCount().getValue(step)),
-                                                      component.getSpreadX().getValue(step), component.getSpreadY().getValue(step), component.getSpreadZ().getValue(step),
-                                                      speed, component.getMaterial().createBlockData());
+                                                      spread.getX(), spread.getY(), spread.getZ(), speed, component.getMaterial().createBlockData());
                     }
                     else {
                         nloc.getWorld().spawnParticle(component.getParticle(), nloc.getX(), nloc.getY(), nloc.getZ(), (int)(component.getCount().getValue(step)),
-                                                      component.getSpreadX().getValue(step), component.getSpreadY().getValue(step), component.getSpreadZ().getValue(step), speed);
+                                                      spread.getX(), spread.getY(), spread.getZ(), speed);
                     }
                 }
             }
