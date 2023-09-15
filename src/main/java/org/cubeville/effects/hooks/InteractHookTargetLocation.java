@@ -114,4 +114,5 @@ public class InteractHookTargetLocation implements InteractHook
         return false;
     }
 
+    public void playAt(Location location) {}    
 }

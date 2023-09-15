@@ -3,6 +3,7 @@ package org.cubeville.effects.hooks;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -50,5 +51,6 @@ public class InteractHookTargetEntity implements InteractHook
     public boolean alwaysActive() {
         return false;
     }
-    
+
+    public void playAt(Location location) {}
 }

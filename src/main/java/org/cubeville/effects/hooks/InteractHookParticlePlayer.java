@@ -95,6 +95,13 @@ public class InteractHookParticlePlayer implements InteractHook
 	new ParticleEffectTimedRunnable(Effects.getInstance(), player, effect, stepsPerTick, speed, loc, followPlayerLocation, followPlayerYaw, followPlayerPitch).runTaskTimer(Effects.getInstance(), 1, 1);
     }
 
+    public void playAt(Location location) {
+        Location loc = location.clone();
+        loc.setY(loc.getY() + yOffset);
+        if(fixedPitch) loc.setPitch((float)pitch);
+	new ParticleEffectTimedRunnable(Effects.getInstance(), null, effect, stepsPerTick, speed, loc, false, false, false).runTaskTimer(Effects.getInstance(), 1, 1);        
+    }
+    
     public boolean usesEffect(Effect effect) {
         return effect == this.effect; // TODO, this needs an overhaul anyways
     }

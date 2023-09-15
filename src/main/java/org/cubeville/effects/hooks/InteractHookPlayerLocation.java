@@ -54,6 +54,11 @@ public class InteractHookPlayerLocation implements InteractHook
 
     public void process(PlayerInteractEvent event) {
         Location loc = event.getPlayer().getLocation();
+        playAt(loc);
+    }
+
+    public void playAt(Location location) {
+        Location loc = location.clone();
         if(fixedPitch) loc.setPitch(0);
         loc.setY(loc.getY() + yoffset);
         loc.add(loc.getDirection().multiply(offset));

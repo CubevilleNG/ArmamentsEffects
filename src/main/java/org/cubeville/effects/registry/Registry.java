@@ -195,6 +195,14 @@ public class Registry implements ConfigurationSerializable
         }
     }
 
+    public List<InteractHook> getInteractHooksOfItem(String ItemName) {
+        if(!interactEvents.containsKey(ItemName)) {
+            return null;
+        }
+        List<InteractHook> hooks = interactEvents.get(ItemName).getHooks();
+        return hooks;
+    }
+    
     public void processMoveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         String itemName = ItemUtil.getItemName(event.getPlayer().getInventory().getBoots());

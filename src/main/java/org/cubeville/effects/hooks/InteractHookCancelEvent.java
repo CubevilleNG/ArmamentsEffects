@@ -3,6 +3,7 @@ package org.cubeville.effects.hooks;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.cubeville.effects.managers.Effect;
@@ -34,5 +35,6 @@ public class InteractHookCancelEvent implements InteractHook
     public boolean alwaysActive() {
         return true;
     }
-    
+
+    public void playAt(Location location) {}
 }

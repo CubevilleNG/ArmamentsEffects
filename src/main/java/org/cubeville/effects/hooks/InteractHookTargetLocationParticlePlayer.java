@@ -97,4 +97,6 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
         return false;
     }
 
+    public void playAt(Location location) {}
+    
 }

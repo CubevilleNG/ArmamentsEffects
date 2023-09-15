@@ -3,12 +3,12 @@ package org.cubeville.effects.hooks;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Location;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.cubeville.effects.managers.Effect;
 import org.cubeville.effects.managers.EffectManager;
 import org.cubeville.effects.managers.EffectWithLivingEntity;
-import org.cubeville.effects.managers.SpawnFrogWithLivingEntityEffect;
 
 @SerializableAs("InteractHookPlayer")
 public class InteractHookPlayer implements InteractHook
@@ -45,4 +45,6 @@ public class InteractHookPlayer implements InteractHook
         return false;
     }
 
+    public void playAt(Location location) {}
+    
 }
