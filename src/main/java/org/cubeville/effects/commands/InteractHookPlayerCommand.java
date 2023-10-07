@@ -10,7 +10,6 @@ import org.bukkit.util.Vector;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import org.cubeville.commons.utils.ColorUtils;
 import org.cubeville.commons.commands.CommandParameterWorld;
 import org.cubeville.commons.commands.BaseCommand;
 import org.cubeville.commons.commands.CommandExecutionException;
@@ -38,8 +37,10 @@ public class InteractHookPlayerCommand extends BaseCommand
 
         Vector v = (Vector) baseParameters.get(2);
         Location location = new Location((World) baseParameters.get(1), v.getX(), v.getY(), v.getZ(), (float) baseParameters.get(3), (float) baseParameters.get(4));
-        
-        List<InteractHook> hooks = Registry.getInstance().getInteractHooksOfItem(ColorUtils.addColor((String) baseParameters.get(0)));
+
+        String itemname = (String) baseParameters.get(0);
+        String citemname = itemname.replace('&', '§');
+        List<InteractHook> hooks = Registry.getInstance().getInteractHooksOfItem(citemname);
 
         for(InteractHook hook: hooks) {
             hook.playAt(location);

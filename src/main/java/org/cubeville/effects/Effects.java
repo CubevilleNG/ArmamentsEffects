@@ -159,6 +159,7 @@ public class Effects extends JavaPlugin {
         if(r == null) r = new Registry();
         eventListener.setRegistry(r);
         if(player != null) player.sendMessage("Registry loaded");
+        e.updateExternalEffectHookReferences();
     }
 
     public void saveEffects() {

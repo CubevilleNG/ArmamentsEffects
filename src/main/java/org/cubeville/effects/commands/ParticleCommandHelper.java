@@ -13,6 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import org.cubeville.commons.commands.*;
+import org.cubeville.effects.managers.Effect;
+import org.cubeville.effects.managers.EffectWithLocation;
+import org.cubeville.effects.managers.EffectManager;
 import org.cubeville.effects.managers.ParticleEffect;
 import org.cubeville.effects.managers.ParticleEffectComponent;
 import org.cubeville.effects.managers.ParticleEffectTimelineEntry;
@@ -27,7 +30,8 @@ import org.cubeville.effects.util.WorldEditUtils;
 public class ParticleCommandHelper
 {
     public static void addCommandParameters(Command command) {
-        command.addParameter("particle", true, new CommandParameterEnum(Particle.class));
+        command.addParameter("particle", true, new CommandParameterEnumOrNull(Particle.class, "none"));
+        command.addParameter("externaleffect", true, new CommandParameterString());
         command.addParameter("constantsource", true, new CommandParameterListVector());
         command.addParameter("constantsource+", true, new CommandParameterListVector());
         command.addParameter("constantsource-", true, new CommandParameterListInteger(1));
@@ -209,7 +213,18 @@ public class ParticleCommandHelper
         }
         
         if(parameters.containsKey("particle")) component.setParticle((Particle) parameters.get("particle"));
-
+        if(parameters.containsKey("externaleffect")) {
+            String name = (String) parameters.get("externaleffect");
+            Effect effect = EffectManager.getInstance().getEffectByName(name);
+            if(effect == null) {
+                throw new IllegalArgumentException("External effect name not found.");
+            }
+            else if(!(effect instanceof EffectWithLocation)) {
+                throw new IllegalArgumentException("Only location-based effects can be used as external effect.");
+            }
+            component.setExternalEffect(name, effect);
+        }
+        
         if(parameters.containsKey("spreadx")) component.setSpreadX((ValueSource) parameters.get("spreadx"));
         if(parameters.containsKey("spready")) component.setSpreadY((ValueSource) parameters.get("spready"));
         if(parameters.containsKey("spreadz")) component.setSpreadZ((ValueSource) parameters.get("spreadz"));

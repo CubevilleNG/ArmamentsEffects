@@ -77,7 +77,7 @@ public class InteractHookParticlePlayer implements InteractHook
         if(fixedPitch) info += ", fp = " + pitch;
         if(yOffset != 0.0) info += ", yo = " + yOffset;
         if(ySneakShift != 0.0) info += ", sys = " + ySneakShift;
-        if(stepsPerTick != 1.0) info += ", step = " + stepsPerTick;
+        if(stepsPerTick != 1.0) info += ", steps = " + stepsPerTick;
         if(speed != 1.0) info += ", speed = " + speed;
         if(followPlayerLocation) info += ", fpl";
         if(followPlayerYaw) info += ", fpy";

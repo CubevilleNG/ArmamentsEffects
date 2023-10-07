@@ -1,6 +1,7 @@
 package org.cubeville.effects.managers;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,5 +73,18 @@ public class EffectManager implements ConfigurationSerializable
         Effect effect = getEffectByName(name);
         if(effect == null) return null;
         return effect.getInfo(detailed);
+    }
+
+    public void updateExternalEffectHookReferences() {
+        for(Effect effect: effects) {
+            if(effect instanceof EffectWithHook) {
+                EffectWithHook e = (EffectWithHook) effect;
+                Set<String> names = e.getExternalEffectNames();
+                for(String name: names) {
+                    Effect externalEffect = getEffectByName(name);
+                    e.setExternalEffectReference(name, externalEffect);
+                }
+            }
+        }
     }
 }

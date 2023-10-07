@@ -20,7 +20,12 @@ import org.cubeville.effects.managers.sources.value.ValueSource;
 public class ParticleEffectComponent implements ConfigurationSerializable
 {
     private CoordinateSource coordinates;
+
     private Particle particle;
+
+    private String externalEffectName;
+    private EffectWithLocation externalEffect;
+    
     private ValueSource count;
     private ValueSource spreadX;
     private ValueSource spreadY;
@@ -58,7 +63,13 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 
     public ParticleEffectComponent(Map<String, Object> config) {
 	coordinates = (CoordinateSource) config.get("coordinates");
-	particle = Particle.valueOf((String) config.get("particle"));
+        {
+            String particleName = (String) config.get("particle");
+            if(particleName.equals("none"))
+                particle = null;
+            else
+                particle = Particle.valueOf(particleName);
+        }
 	count = (ValueSource) config.get("count");
         spreadX = (ValueSource) config.get("spreadX");
         spreadY = (ValueSource) config.get("spreadY");
@@ -113,12 +124,15 @@ public class ParticleEffectComponent implements ConfigurationSerializable
             entityCollisionCheck = (boolean) config.get("entityCollisionCheck");
         else
             entityCollisionCheck = false;
+
+        if(config.get("externalEffectName") != null)
+            externalEffectName = (String) config.get("externalEffectName");
     }
 
     public Map<String, Object> serialize() {
 	Map<String, Object> ret = new HashMap<>();
 	ret.put("coordinates", coordinates);
-	ret.put("particle", particle.toString());
+	ret.put("particle", particle == null ? "none" : particle.toString());
 	ret.put("count", count);
         ret.put("spreadX", spreadX);
         ret.put("spreadY", spreadY);
@@ -137,6 +151,8 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 	ret.put("speed", speed);
         ret.put("blockCollisionCheck", blockCollisionCheck);
         ret.put("entityCollisionCheck", entityCollisionCheck);
+        if(externalEffectName != null)
+            ret.put("externalEffectName", externalEffectName);
 	return ret;
     }
 
@@ -158,10 +174,26 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 	return false;
     }
 
-    public int getLocationOffset(int step) {
+    public int getActiveTimelineCount(int step) {
+        if(timeline.size() == 0) return 1;
+        int ret = 0;
+	for(ParticleEffectTimelineEntry tle: timeline) {
+	    if(step >= tle.getStepStart() && step < tle.getStepStart() + tle.getStepCount()) {
+		ret++;
+	    }
+	}
+	return ret;
+    }
+    
+    public int getLocationOffset(int step, int activeTimeline) {
+        if(timeline.size() == 0) return 0;
+        int tlnum = 0;
         for(ParticleEffectTimelineEntry tle: timeline) {
             if(step >= tle.getStepStart() && step < tle.getStepStart() + tle.getStepCount()) {
-                return tle.getLocationOffset();
+                if(activeTimeline == tlnum) {
+                    return tle.getLocationOffset();
+                }
+                tlnum++;
             }
         }
         return 0;
@@ -170,7 +202,8 @@ public class ParticleEffectComponent implements ConfigurationSerializable
     public List<String> getInfo(boolean detailed) {
 	List<String> ret = new ArrayList<>();
 	ret.add("  Source: " + coordinates.getInfo(detailed));
-	ret.add("  Particle: " + particle);
+	ret.add("  Particle: " + (particle == null ? "none" : particle));
+        ret.add("  External effect: " + (externalEffectName == null ? "none" : externalEffectName));
 	ret.add("  Count: " + count.getInfo());
 	ret.add("  SpreadX: " + spreadX.getInfo());
 	ret.add("  SpreadY: " + spreadY.getInfo());
@@ -179,7 +212,7 @@ public class ParticleEffectComponent implements ConfigurationSerializable
             ret.add("  Material: " + material);
         }
         ret.add("  Speed: " + speed.getInfo());
-        if(particle == Particle.REDSTONE || particle == Particle.DUST_COLOR_TRANSITION) {
+        if(particle != null && (particle == Particle.REDSTONE || particle == Particle.DUST_COLOR_TRANSITION)) {
             ret.add("  Red: " + colourRed.getInfo());
             ret.add("  Green: " + colourGreen.getInfo());
             ret.add("  Blue: " + colourBlue.getInfo());
@@ -224,7 +257,7 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 	this.coordinates = coordinates;
     }
     
-    public final List<Vector> getModifiedCoordinates(int step) {
+    public final List<Vector> getModifiedCoordinates(int step, boolean useTimelineOffset) { // TODO the second parameter is new, still needs to be added here and in calls
 	List<Vector> ret = coordinates.getVertices(step, 0);
 	for(CoordinateModifier modifier: getModifiers()) {
 	    ret = modifier.modify(ret, step);
@@ -374,5 +407,34 @@ public class ParticleEffectComponent implements ConfigurationSerializable
     
     public final boolean getEntityCollisionCheck() {
         return entityCollisionCheck;
+    }
+
+    public final String getExternalEffectName() {
+        return externalEffectName;
+    }
+
+    public final EffectWithLocation getExternalEffect() {
+        return externalEffect;
+    }
+    
+    public final void setExternalEffect(String externalEffectName, Effect externalEffect) {
+        if(externalEffect instanceof EffectWithLocation) {
+            this.externalEffectName = externalEffectName;
+            this.externalEffect = (EffectWithLocation) externalEffect;
+        }
+        else {
+            this.externalEffectName = null;
+            this.externalEffect = null;
+        }
+    }
+
+    public final void setExternalEffect(Effect externalEffect) {
+        if(externalEffect instanceof EffectWithLocation) {
+            this.externalEffect = (EffectWithLocation) externalEffect;
+        }
+        else {
+            this.externalEffectName = null;
+            this.externalEffect = null;
+        }
     }
 }
