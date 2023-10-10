@@ -36,7 +36,7 @@ public abstract class Effect implements ConfigurationSerializable
 	this.name = name;
     }
     
-    public abstract List<String> getInfo(boolean detailed);
+    public abstract List<String> getInfo(boolean detailed, String limit);
     
     public List<String> getInfoBase() {
         List<String> ret = new ArrayList<>();

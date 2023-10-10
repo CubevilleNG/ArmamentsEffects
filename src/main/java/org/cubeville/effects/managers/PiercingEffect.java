@@ -86,7 +86,7 @@ public class PiercingEffect extends Effect
         TRUE, MAGICAL, PHYSICAL, ABSORPTION, ARMOR, MAGIC, RESISTANCE;
     }
 
-    public List<String> getInfo(boolean detailed) {
+    public List<String> getInfo(boolean detailed, String limit) {
         List<String> ret = getInfoBase();
         ret.add("Piercing: " + type + " (" + factor + ")");
         return ret;

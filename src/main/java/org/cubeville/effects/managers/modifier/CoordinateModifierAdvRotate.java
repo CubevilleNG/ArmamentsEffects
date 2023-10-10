@@ -60,8 +60,8 @@ public class CoordinateModifierAdvRotate implements CoordinateModifier
 	return ret;
     }
 
-    public String getInfo() {
-	return "Advanced Rotate " + direction + ": " + source.getInfo();
+    public String getInfo(boolean detailed) {
+	return "Advanced Rotate " + direction + ": " + source.getInfo(detailed);
     }
 
 }

@@ -32,15 +32,15 @@ public class ListValueSource implements ValueSource
         return ret;
     }
 
-    public String getInfo() {
+    public String getInfo(boolean detailed) {
         String ret = "List ";
         for(int i = 0; i < values.size(); i++) {
-            if(i == 10) {
+            if(i == 10 && detailed == false) {
                 ret += "...";
                 break;
             }
             if(i > 0) ret += ", ";
-            i += values.get(i);
+            ret += values.get(i);
         }
         return ret;
     }

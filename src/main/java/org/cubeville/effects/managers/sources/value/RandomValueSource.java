@@ -35,7 +35,7 @@ public class RandomValueSource implements ValueSource
 	return random.nextDouble() * (max - min) + min;
     }
 
-    public String getInfo() {
+    public String getInfo(boolean detailed) {
 	return "Random " + min + " - " + max;
     }
     

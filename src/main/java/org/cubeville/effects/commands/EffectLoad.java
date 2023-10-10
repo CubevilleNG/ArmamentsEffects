@@ -48,6 +48,8 @@ public class EffectLoad extends Command
         Effect effect = (Effect) file.get("effect");
         effect.setName(name);
         EffectManager.getInstance().addEffect(effect);
+
+        CommandUtil.saveConfig();
         
         return new CommandResponse("Effect loaded.");
     }   

@@ -55,8 +55,8 @@ public class CoordinateModifierMove implements CoordinateModifier
 	return ret;
     }
 
-    public String getInfo() {
-	return "Move " + (x ? "x" : "") + (y ? "y" : "") + (z ? "z" : "") + ": " + source.getInfo();
+    public String getInfo(boolean detailed) {
+	return "Move " + (x ? "x" : "") + (y ? "y" : "") + (z ? "z" : "") + ": " + source.getInfo(detailed);
     }
 
 }

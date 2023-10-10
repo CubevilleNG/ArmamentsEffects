@@ -25,6 +25,7 @@ public class EffectCreateSoundCommand extends Command
         addBaseParameter(new CommandParameterEnum(Sound.class));
         addOptionalBaseParameter(new CommandParameterFloat());
         addParameter("delay", true, new CommandParameterInteger());
+        addParameter("volume", true, new CommandParameterFloat());
     }
 
     public CommandResponse execute(Player player, Set<String> flags, Map<String, Object> parameters, List<Object> baseParameters) throws CommandExecutionException {
@@ -40,8 +41,13 @@ public class EffectCreateSoundCommand extends Command
         if(parameters.containsKey("delay")) {
             delay = (Integer) parameters.get("delay");
         }
+
+        float volume = 1.0F;
+        if(parameters.containsKey("volume")) {
+            volume = (float) parameters.get("volume");
+        }
         
-        SoundEffect effect = new SoundEffect(name, (Sound) baseParameters.get(1), pitch, delay);
+        SoundEffect effect = new SoundEffect(name, (Sound) baseParameters.get(1), pitch, delay, volume);
         EffectManager.getInstance().addEffect(effect);
         CommandUtil.saveConfig();
 

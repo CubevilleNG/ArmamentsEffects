@@ -1,11 +1,13 @@
 package org.cubeville.effects.commands;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -32,6 +34,36 @@ public class ParticleCommandHelper
     public static void addCommandParameters(Command command) {
         command.addParameter("particle", true, new CommandParameterEnumOrNull(Particle.class, "none"));
         command.addParameter("externaleffect", true, new CommandParameterString());
+
+        command.addParameter("armorstandactive", true, new CommandParameterBoolean());
+        command.addParameter("armorstandrotation", true, new CommandParameterValueSource());
+        command.addParameter("armorstandheadposex", true, new CommandParameterValueSource());
+        command.addParameter("armorstandheadposey", true, new CommandParameterValueSource());
+        command.addParameter("armorstandheadposez", true, new CommandParameterValueSource());
+        command.addParameter("armorstandbodyposex", true, new CommandParameterValueSource());
+        command.addParameter("armorstandbodyposey", true, new CommandParameterValueSource());
+        command.addParameter("armorstandbodyposez", true, new CommandParameterValueSource());
+        command.addParameter("armorstandleftarmposex", true, new CommandParameterValueSource());
+        command.addParameter("armorstandleftarmposey", true, new CommandParameterValueSource());
+        command.addParameter("armorstandleftarmposez", true, new CommandParameterValueSource());
+        command.addParameter("armorstandrightarmposex", true, new CommandParameterValueSource());
+        command.addParameter("armorstandrightarmposey", true, new CommandParameterValueSource());
+        command.addParameter("armorstandrightarmposez", true, new CommandParameterValueSource());
+        command.addParameter("armorstandleftlegposex", true, new CommandParameterValueSource());
+        command.addParameter("armorstandleftlegposey", true, new CommandParameterValueSource());
+        command.addParameter("armorstandleftlegposez", true, new CommandParameterValueSource());
+        command.addParameter("armorstandrightlegposex", true, new CommandParameterValueSource());
+        command.addParameter("armorstandrightlegposey", true, new CommandParameterValueSource());
+        command.addParameter("armorstandrightlegposez", true, new CommandParameterValueSource());
+        command.addFlag("armorstandheaditem");
+        command.addFlag("armorstandbodyitem");
+        command.addFlag("armorstandlefthanditem");
+        command.addFlag("armorstandrighthanditem");
+        command.addFlag("armorstandfeetitem");
+        command.addParameter("armorstandarms", true, new CommandParameterBoolean());
+        command.addParameter("armorstandvisible", true, new CommandParameterBoolean());
+        command.addParameter("armorstandsmall", true, new CommandParameterBoolean());
+        
         command.addParameter("constantsource", true, new CommandParameterListVector());
         command.addParameter("constantsource+", true, new CommandParameterListVector());
         command.addParameter("constantsource-", true, new CommandParameterListInteger(1));
@@ -79,7 +111,8 @@ public class ParticleCommandHelper
         }
         command.addParameter("modifier-", true, new CommandParameterInteger());
         command.addParameter("material", true, new CommandParameterEnum(Material.class));
-        command.addParameter("timeline+", true, new CommandParameterListInteger(4));
+        command.addFlag("cleartimelines");
+        command.addParameter("timeline+", true, new CommandParameterListInteger(5));
         command.addParameter("timeline-", true, new CommandParameterInteger());
         command.addParameter("red", true, new CommandParameterValueSource());
         command.addParameter("green", true, new CommandParameterValueSource());
@@ -99,7 +132,7 @@ public class ParticleCommandHelper
         if(parameters.containsKey("repeatoffset")) effect.setRepeatOffset((int) parameters.get("repeatoffset"));
     }
 
-    public static void setComponentValues(ParticleEffectComponent component, Map<String, Object> parameters, Player player) {
+    public static void setComponentValues(ParticleEffectComponent component, Map<String, Object> parameters, Set<String> flags, Player player) {
         int numberOfSources = 0;
         if(parameters.containsKey("constantsource")) numberOfSources++;
         if(parameters.containsKey("constantsource+")) numberOfSources++;
@@ -215,14 +248,104 @@ public class ParticleCommandHelper
         if(parameters.containsKey("particle")) component.setParticle((Particle) parameters.get("particle"));
         if(parameters.containsKey("externaleffect")) {
             String name = (String) parameters.get("externaleffect");
-            Effect effect = EffectManager.getInstance().getEffectByName(name);
-            if(effect == null) {
-                throw new IllegalArgumentException("External effect name not found.");
+            if(name.equals("none")) {
+                component.setExternalEffect(null);
             }
-            else if(!(effect instanceof EffectWithLocation)) {
-                throw new IllegalArgumentException("Only location-based effects can be used as external effect.");
+            else {
+                Effect effect = EffectManager.getInstance().getEffectByName(name);
+                if(effect == null) {
+                    throw new IllegalArgumentException("External effect name not found.");
+                }
+                else if(!(effect instanceof EffectWithLocation)) {
+                    throw new IllegalArgumentException("Only location-based effects can be used as external effect.");
+                }
+                component.setExternalEffect(name, effect);
             }
-            component.setExternalEffect(name, effect);
+        }
+
+        if(parameters.containsKey("armorstandactive")) {
+            if((boolean) parameters.get("armorstandactive")) {
+                component.createOrGetArmorStandProperties();
+            }
+            else {
+                component.removeArmorStand();
+            }
+        }
+
+        if(parameters.containsKey("armorstandarms"))
+            component.createOrGetArmorStandProperties().hasArms = (boolean) parameters.get("armorstandarms");
+        if(parameters.containsKey("armorstandvisible"))
+            component.createOrGetArmorStandProperties().visible = (boolean) parameters.get("armorstandvisible");
+        if(parameters.containsKey("armorstandsmall"))
+            component.createOrGetArmorStandProperties().small = (boolean) parameters.get("armorstandsmall");
+        
+        if(parameters.containsKey("armorstandrotation"))
+            component.createOrGetArmorStandProperties().rotation = (ValueSource) parameters.get("armorstandrotation");
+        if(parameters.containsKey("armorstandheadposex"))
+            component.createOrGetArmorStandProperties().headPoseX = (ValueSource) parameters.get("armorstandheadposex");
+        if(parameters.containsKey("armorstandheadposey"))
+            component.createOrGetArmorStandProperties().headPoseY = (ValueSource) parameters.get("armorstandheadposey");
+        if(parameters.containsKey("armorstandheadposez"))
+            component.createOrGetArmorStandProperties().headPoseZ = (ValueSource) parameters.get("armorstandheadposez");
+        if(parameters.containsKey("armorstandbodyposex"))
+            component.createOrGetArmorStandProperties().bodyPoseX = (ValueSource) parameters.get("armorstandbodyposex");
+        if(parameters.containsKey("armorstandbodyposey"))
+            component.createOrGetArmorStandProperties().bodyPoseY = (ValueSource) parameters.get("armorstandbodyposey");
+        if(parameters.containsKey("armorstandbodyposez"))
+            component.createOrGetArmorStandProperties().bodyPoseZ = (ValueSource) parameters.get("armorstandbodyposez");
+        if(parameters.containsKey("armorstandleftarmposex"))
+            component.createOrGetArmorStandProperties().leftArmPoseX = (ValueSource) parameters.get("armorstandleftarmposex");
+        if(parameters.containsKey("armorstandleftarmposey"))
+            component.createOrGetArmorStandProperties().leftArmPoseY = (ValueSource) parameters.get("armorstandleftarmposey");
+        if(parameters.containsKey("armorstandleftarmposez"))
+            component.createOrGetArmorStandProperties().leftArmPoseZ = (ValueSource) parameters.get("armorstandleftarmposez");
+        if(parameters.containsKey("armorstandrightarmposex"))
+            component.createOrGetArmorStandProperties().rightArmPoseX = (ValueSource) parameters.get("armorstandrightarmposex");
+        if(parameters.containsKey("armorstandrightarmposey"))
+            component.createOrGetArmorStandProperties().rightArmPoseY = (ValueSource) parameters.get("armorstandrightarmposey");
+        if(parameters.containsKey("armorstandrightarmposez"))
+            component.createOrGetArmorStandProperties().rightArmPoseZ = (ValueSource) parameters.get("armorstandrightarmposez");
+        if(parameters.containsKey("armorstandleftlegposex"))
+            component.createOrGetArmorStandProperties().leftLegPoseX = (ValueSource) parameters.get("armorstandleftlegposex");
+        if(parameters.containsKey("armorstandleftlegposey"))
+            component.createOrGetArmorStandProperties().leftLegPoseY = (ValueSource) parameters.get("armorstandleftlegposey");
+        if(parameters.containsKey("armorstandleftlegposez"))
+            component.createOrGetArmorStandProperties().leftLegPoseZ = (ValueSource) parameters.get("armorstandleftlegposez");
+        if(parameters.containsKey("armorstandrightlegposex"))
+            component.createOrGetArmorStandProperties().rightLegPoseX = (ValueSource) parameters.get("armorstandrightlegposex");
+        if(parameters.containsKey("armorstandrightlegposey"))
+            component.createOrGetArmorStandProperties().rightLegPoseY = (ValueSource) parameters.get("armorstandrightlegposey");
+        if(parameters.containsKey("armorstandrightlegposez"))
+            component.createOrGetArmorStandProperties().rightLegPoseZ = (ValueSource) parameters.get("armorstandrightlegposez");
+
+        if(flags.contains("armorstandheaditem")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand head item command.");
+            component.createOrGetArmorStandProperties().headItem = item;
+        }
+        
+        if(flags.contains("armorstandbodyitem")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand body item command.");
+            component.createOrGetArmorStandProperties().bodyItem = item;
+        }
+        
+        if(flags.contains("armorstandlefthanditem")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand left hand item command.");
+            component.createOrGetArmorStandProperties().leftHandItem = item;
+        }
+        
+        if(flags.contains("armorstandrighthanditem")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand right hand item command.");
+            component.createOrGetArmorStandProperties().rightHandItem = item;
+        }
+        
+        if(flags.contains("armorstandfeetitem")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand feet item command.");
+            component.createOrGetArmorStandProperties().feetItem = item;
         }
         
         if(parameters.containsKey("spreadx")) component.setSpreadX((ValueSource) parameters.get("spreadx"));
@@ -271,11 +394,17 @@ public class ParticleCommandHelper
                                               (ValueSource) pars.get(1));
             component.addModifier(modifier);
         }
-        
+
         if(parameters.containsKey("modifier-")) {
             int index = (int) parameters.get("modifier-");
             if(index > 0 && index <= component.getModifiers().size()) {
                 component.getModifiers().remove(index - 1);
+            }
+        }
+        
+        if(flags.contains("cleartimelines")) {
+            while(component.getTimeline().size() > 0) {
+                component.getTimeline().remove(0);
             }
         }
         
@@ -285,7 +414,8 @@ public class ParticleCommandHelper
             int tcount = p.get(1);
             int trepeat = p.get(2);
             int tlocoffset = p.get(3);
-            component.getTimeline().add(new ParticleEffectTimelineEntry(tstart, trepeat, tcount, tlocoffset));
+            int teffectoffset = p.get(4);
+            component.getTimeline().add(new ParticleEffectTimelineEntry(tstart, trepeat, tcount, tlocoffset, teffectoffset));
         }
 
         if(parameters.containsKey("timeline-")) {

@@ -32,7 +32,7 @@ public class LinearValueSource implements ValueSource
 	return start + step * increment;
     }
     
-    public String getInfo() {
+    public String getInfo(boolean detailed) {
 	return "Linear " + start + " " + increment;
     }
 

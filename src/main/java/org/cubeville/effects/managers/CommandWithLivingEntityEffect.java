@@ -40,7 +40,7 @@ public class CommandWithLivingEntityEffect extends EffectWithLivingEntity
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c);
     }
 
-    public List<String> getInfo(boolean detailed) {
+    public List<String> getInfo(boolean detailed, String limit) {
         List<String> ret = getInfoBase();
         ret.add("Command: " + command);
         return ret;

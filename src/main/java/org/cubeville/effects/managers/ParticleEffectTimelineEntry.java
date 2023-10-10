@@ -13,12 +13,14 @@ public class ParticleEffectTimelineEntry implements ConfigurationSerializable
     int stepRepeat;
     int stepCount;
     int locationOffset;
+    int effectOffset;
     
-    public ParticleEffectTimelineEntry(int stepStart, int stepRepeat, int stepCount, int locationOffset) {
+    public ParticleEffectTimelineEntry(int stepStart, int stepRepeat, int stepCount, int locationOffset, int effectOffset) {
 	this.stepStart = stepStart;
 	this.stepRepeat = stepRepeat;
 	this.stepCount = stepCount;
         this.locationOffset = locationOffset;
+        this.effectOffset = effectOffset;
     }
 
     public ParticleEffectTimelineEntry(Map<String, Object> config) {
@@ -29,6 +31,10 @@ public class ParticleEffectTimelineEntry implements ConfigurationSerializable
             locationOffset = (int) config.get("locationOffset");
         else
             locationOffset = 0;
+        if(config.get("effectOffset") != null)
+            effectOffset = (int) config.get("effectOffset");
+        else
+            effectOffset = 0;
     }
 
     public Map<String, Object> serialize() {
@@ -37,6 +43,7 @@ public class ParticleEffectTimelineEntry implements ConfigurationSerializable
 	ret.put("stepRepeat", stepRepeat);
 	ret.put("stepCount", stepCount);
         ret.put("locationOffset", locationOffset);
+        ret.put("effectOffset", effectOffset);
 	return ret;
     }
     
@@ -70,5 +77,13 @@ public class ParticleEffectTimelineEntry implements ConfigurationSerializable
 
     public final void setLocationOffset(final int locationOffset) {
         this.locationOffset = locationOffset;
+    }
+
+    public final int getEffectOffset() {
+        return this.effectOffset;
+    }
+
+    public final void setEffectOffset(final int effectOffset) {
+        this.effectOffset = effectOffset;
     }
 }

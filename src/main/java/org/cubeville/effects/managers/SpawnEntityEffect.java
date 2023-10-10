@@ -37,7 +37,7 @@ public class SpawnEntityEffect extends EffectWithLocation
         }
     }
 
-    public List<String> getInfo(boolean detailed) {
+    public List<String> getInfo(boolean detailed, String limit) {
         List<String> ret = getInfoBase();
         ret.add("Entity type: " + type.toString());
         return ret;

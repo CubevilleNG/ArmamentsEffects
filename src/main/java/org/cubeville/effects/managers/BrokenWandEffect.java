@@ -89,7 +89,7 @@ public class BrokenWandEffect extends EffectWithLivingEntity
         }
     }
 
-    public List<String> getInfo(boolean detailed) {
+    public List<String> getInfo(boolean detailed, String limit) {
         List<String> ret = getInfoBase();
         return ret;
     }

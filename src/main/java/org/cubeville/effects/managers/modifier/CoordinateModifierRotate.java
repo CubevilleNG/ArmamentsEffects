@@ -39,8 +39,8 @@ public class CoordinateModifierRotate implements CoordinateModifier
 	return ret;
     }
 
-    public String getInfo() {
-	return "Rotate " + source.getInfo();
+    public String getInfo(boolean detailed) {
+	return "Rotate " + source.getInfo(detailed);
     }
 
 }

@@ -13,6 +13,7 @@ public class ParticleEffectProjectileRunnable extends BukkitRunnable implements 
     private final ParticleEffect effect;
     private final Player player;
     private int step;
+    private final int runningEffectId;
     
     public ParticleEffectProjectileRunnable(ParticleEffect effect, Projectile projectile) {
         this.projectile = projectile;
@@ -22,6 +23,7 @@ public class ParticleEffectProjectileRunnable extends BukkitRunnable implements 
         else
             player = null;
         step = 0;
+        runningEffectId = EffectManager.getNewRunningEffectId();
         Registry.getInstance().addProjectileHitAction(projectile, this);
     }
 
@@ -48,7 +50,7 @@ public class ParticleEffectProjectileRunnable extends BukkitRunnable implements 
         Location loc = projectile.getLocation();
         loc.setYaw(360 - loc.getYaw());
         loc.setPitch(-loc.getPitch());        
-        if(!effect.play(step, new StaticParticleEffectLocationCalculator(loc), player)) {
+        if(!effect.play(step, new StaticParticleEffectLocationCalculator(loc), player, runningEffectId)) {
             abort();
             return;
         }

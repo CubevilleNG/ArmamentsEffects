@@ -12,7 +12,6 @@ import org.cubeville.commons.commands.CommandExecutionException;
 import org.cubeville.commons.commands.CommandParameterString;
 import org.cubeville.commons.commands.CommandParameterInteger;
 import org.cubeville.commons.commands.CommandResponse;
-import org.cubeville.effects.managers.CommandWithLocationEffect;
 import org.cubeville.effects.managers.Effect;
 import org.cubeville.effects.managers.EffectManager;
 import org.cubeville.effects.managers.ParticleEffect;
@@ -64,6 +63,9 @@ public class EffectImportComponent extends Command
         componentNr--;
 
         ((ParticleEffect)EffectManager.getInstance().getEffectByName(name)).addComponent(particleEffect.getComponents().get(componentNr));
+
+        CommandUtil.saveConfig();
+        
         return new CommandResponse("Component added.");
     }
 }

@@ -46,7 +46,7 @@ public class CoordinateModifierScale2d implements CoordinateModifier
 	return ret;
     }
 
-    public String getInfo() {
-	return "Scale2d " + sourceX.getInfo() + ", " + sourceY.getInfo();
+    public String getInfo(boolean detailed) {
+	return "Scale2d " + sourceX.getInfo(detailed) + ", " + sourceY.getInfo(detailed);
     }
 }

@@ -28,7 +28,7 @@ public class ConstantValueSource implements ValueSource
 	return value;
     }
     
-    public String getInfo() {
+    public String getInfo(boolean detailed) {
 	return "Constant " + value;
     }
 }

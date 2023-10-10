@@ -25,6 +25,8 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 
     private String externalEffectName;
     private EffectWithLocation externalEffect;
+
+    private ArmorStandProperties armorStandProperties;
     
     private ValueSource count;
     private ValueSource spreadX;
@@ -59,6 +61,7 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 	timeline = new ArrayList<>();
         blockCollisionCheck = false;
         entityCollisionCheck = false;
+        armorStandProperties = null;
     }
 
     public ParticleEffectComponent(Map<String, Object> config) {
@@ -127,6 +130,10 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 
         if(config.get("externalEffectName") != null)
             externalEffectName = (String) config.get("externalEffectName");
+
+        if(config.get("armorStandProperties") != null) {
+            armorStandProperties = (ArmorStandProperties) config.get("armorStandProperties");
+        }
     }
 
     public Map<String, Object> serialize() {
@@ -153,6 +160,7 @@ public class ParticleEffectComponent implements ConfigurationSerializable
         ret.put("entityCollisionCheck", entityCollisionCheck);
         if(externalEffectName != null)
             ret.put("externalEffectName", externalEffectName);
+        ret.put("armorStandProperties", armorStandProperties);
 	return ret;
     }
 
@@ -174,65 +182,85 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 	return false;
     }
 
-    public int getActiveTimelineCount(int step) {
-        if(timeline.size() == 0) return 1;
-        int ret = 0;
-	for(ParticleEffectTimelineEntry tle: timeline) {
-	    if(step >= tle.getStepStart() && step < tle.getStepStart() + tle.getStepCount()) {
-		ret++;
-	    }
-	}
-	return ret;
+    public boolean isTimelineActive(int timelineNo, int step) {
+        if(timeline.size() == 0)
+            return timelineNo == 0;
+
+        ParticleEffectTimelineEntry tle = timeline.get(timelineNo);
+        return step >= tle.getStepStart() && step < tle.getStepStart() + tle.getStepCount();
+    }
+
+    public int getRemainingStepsOfTimeline(int timelineNo, int step) {
+        if(timeline.size() == 0) return 1000;
+        ParticleEffectTimelineEntry tle = timeline.get(timelineNo);
+        return tle.getStepStart() + tle.getStepCount() - step;
     }
     
-    public int getLocationOffset(int step, int activeTimeline) {
+    public int getLocationOffset(int timelineNo) {
         if(timeline.size() == 0) return 0;
-        int tlnum = 0;
-        for(ParticleEffectTimelineEntry tle: timeline) {
-            if(step >= tle.getStepStart() && step < tle.getStepStart() + tle.getStepCount()) {
-                if(activeTimeline == tlnum) {
-                    return tle.getLocationOffset();
-                }
-                tlnum++;
-            }
-        }
-        return 0;
+        ParticleEffectTimelineEntry tle = timeline.get(timelineNo);
+        return tle.getLocationOffset();
+    }
+
+    public int getEffectOffset(int timelineNo) {
+        if(timeline.size() == 0) return 0;
+        ParticleEffectTimelineEntry tle = timeline.get(timelineNo);
+        return tle.getEffectOffset();
+    }
+    
+    public int getTimelineCount() {
+        if(timeline.size() == 0) return 1;
+        return timeline.size();
     }
     
     public List<String> getInfo(boolean detailed) {
 	List<String> ret = new ArrayList<>();
 	ret.add("  Source: " + coordinates.getInfo(detailed));
-	ret.add("  Particle: " + (particle == null ? "none" : particle));
-        ret.add("  External effect: " + (externalEffectName == null ? "none" : externalEffectName));
-	ret.add("  Count: " + count.getInfo());
-	ret.add("  SpreadX: " + spreadX.getInfo());
-	ret.add("  SpreadY: " + spreadY.getInfo());
-	ret.add("  SpreadZ: " + spreadZ.getInfo());
-        if(particle == Particle.ITEM_CRACK || particle == Particle.BLOCK_CRACK || particle == Particle.BLOCK_DUST || particle == Particle.FALLING_DUST) {
-            ret.add("  Material: " + material);
-        }
-        ret.add("  Speed: " + speed.getInfo());
-        if(particle != null && (particle == Particle.REDSTONE || particle == Particle.DUST_COLOR_TRANSITION)) {
-            ret.add("  Red: " + colourRed.getInfo());
-            ret.add("  Green: " + colourGreen.getInfo());
-            ret.add("  Blue: " + colourBlue.getInfo());
-            if(particle == Particle.DUST_COLOR_TRANSITION) {
-                ret.add("  To Red: " + colourToRed.getInfo());
-                ret.add("  To Green: " + colourToGreen.getInfo());
-                ret.add("  To Blue: " + colourToBlue.getInfo());
+        if(externalEffectName != null) ret.add("  §eExternal effect:§r " + externalEffectName);
+
+        if(particle != null) ret.add("  §eParticle:§r " + particle);
+        if(particle != null) {
+            ret.add("    Count: " + count.getInfo(detailed));
+            ret.add("    SpreadX: " + spreadX.getInfo(detailed));
+            ret.add("    SpreadY: " + spreadY.getInfo(detailed));
+            ret.add("    SpreadZ: " + spreadZ.getInfo(detailed));
+            if(particle == Particle.ITEM_CRACK || particle == Particle.BLOCK_CRACK || particle == Particle.BLOCK_DUST || particle == Particle.FALLING_DUST) {
+                ret.add("    Material: " + material);
             }
-            ret.add("  Size: " + size.getInfo());
+            ret.add("    Speed: " + speed.getInfo(detailed));
+            if(particle != null && (particle == Particle.REDSTONE || particle == Particle.DUST_COLOR_TRANSITION)) {
+                ret.add("    Red: " + colourRed.getInfo(detailed));
+                ret.add("    Green: " + colourGreen.getInfo(detailed));
+                ret.add("    Blue: " + colourBlue.getInfo(detailed));
+                if(particle == Particle.DUST_COLOR_TRANSITION) {
+                    ret.add("    To Red: " + colourToRed.getInfo(detailed));
+                    ret.add("    To Green: " + colourToGreen.getInfo(detailed));
+                    ret.add("    To Blue: " + colourToBlue.getInfo(detailed));
+                }
+                ret.add("    Size: " + size.getInfo(detailed));
+            }
         }
+
+        if(isArmorStandActive()) {
+            String ai = "  §eArmor stand:§r ";
+            ai += armorStandProperties.visible ? "visible" : "invisible";
+            ai += armorStandProperties.hasArms ? ", arms" : ", no arms";
+            ai += armorStandProperties.small ? ", small" : "";
+            ret.add(ai);
+        }
+        
 	if(modifiers.size() > 0) {
 	    ret.add("  Modifiers:");
+            int cnt = 0;
 	    for(CoordinateModifier modifier: modifiers) {
-		ret.add("    " + modifier.getInfo());
+		ret.add("    §7" + (++cnt) + ")§r " + modifier.getInfo(detailed));
 	    }
 	}
 	if(timeline.size() > 0) {
 	    ret.add("  Timeline:");
+            int cnt = 0;
 	    for(ParticleEffectTimelineEntry e: timeline) {
-		ret.add("    " + e.getStepStart() + "-" + (e.getStepStart() + e.getStepCount()) + "x" + e.getStepRepeat());
+		ret.add("    §7" + (++cnt) + ")§r " + e.getStepStart() + "-" + (e.getStepStart() + e.getStepCount()) + "x" + e.getStepRepeat() + " (" + e.getLocationOffset() + "/" + e.getEffectOffset() + ")");
 	    }
 	}
         if(blockCollisionCheck || entityCollisionCheck) {
@@ -404,7 +432,7 @@ public class ParticleEffectComponent implements ConfigurationSerializable
     public final void setEntityCollisionCheck(boolean entityCollisionCheck) {
         this.entityCollisionCheck = entityCollisionCheck;
     }
-    
+
     public final boolean getEntityCollisionCheck() {
         return entityCollisionCheck;
     }
@@ -416,7 +444,7 @@ public class ParticleEffectComponent implements ConfigurationSerializable
     public final EffectWithLocation getExternalEffect() {
         return externalEffect;
     }
-    
+
     public final void setExternalEffect(String externalEffectName, Effect externalEffect) {
         if(externalEffect instanceof EffectWithLocation) {
             this.externalEffectName = externalEffectName;
@@ -436,5 +464,23 @@ public class ParticleEffectComponent implements ConfigurationSerializable
             this.externalEffectName = null;
             this.externalEffect = null;
         }
+    }
+
+    public final boolean isArmorStandActive() {
+        return armorStandProperties != null;
+    }
+
+    public final ArmorStandProperties getArmorStandProperties() {
+        return armorStandProperties;
+    }
+
+    public final ArmorStandProperties createOrGetArmorStandProperties() {
+        if(armorStandProperties == null)
+            armorStandProperties = new ArmorStandProperties();
+        return armorStandProperties;
+    }
+
+    public final void removeArmorStand() {
+        armorStandProperties = null;
     }
 }

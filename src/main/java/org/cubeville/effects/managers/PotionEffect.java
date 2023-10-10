@@ -33,6 +33,7 @@ public class PotionEffect extends EffectWithLivingEntity
     {
         System.out.println("EFFECT TYPE: " + effectType);
     }
+
     public PotionEffect(Map<String, Object> config) {
         this.effectType = PotionEffectType.getByName((String) config.get("effecttype"));
         this.duration = (int) config.get("duration");
@@ -48,7 +49,7 @@ public class PotionEffect extends EffectWithLivingEntity
         return ret;
     }
 
-    public List<String> getInfo(boolean detailed) {
+    public List<String> getInfo(boolean detailed, String limit) {
         List<String> ret = getInfoBase();
         ret.add("PotionEffect: " + effectType.getName());
         return ret;

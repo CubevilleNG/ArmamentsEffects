@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cubeville.commons.commands.CommandParameterInteger;
 import org.cubeville.commons.commands.CommandParameterBoolean;
 import org.cubeville.commons.commands.CommandParameterDouble;
 import org.cubeville.commons.commands.CommandParameterList;
@@ -13,6 +14,7 @@ import org.cubeville.commons.commands.CommandParameterType;
 import org.cubeville.effects.managers.sources.value.ConstantValueSource;
 import org.cubeville.effects.managers.sources.value.LinearValueSource;
 import org.cubeville.effects.managers.sources.value.ListValueSource;
+import org.cubeville.effects.managers.sources.value.MultiValueSource;
 import org.cubeville.effects.managers.sources.value.RandomValueSource;
 import org.cubeville.effects.managers.sources.value.SinewaveValueSource;
 import org.cubeville.effects.managers.sources.value.ValueSource;
@@ -27,7 +29,7 @@ public class CommandParameterValueSource implements CommandParameterType
     
     Map<String, CommandParameterList> parameterLists;
 
-    public CommandParameterValueSource() {
+    public CommandParameterValueSource(boolean root) { // multi can only be used on root, not recursively
         parameterLists = new HashMap<>();
 
         List<CommandParameterType> constList = new ArrayList<>();;
@@ -55,6 +57,20 @@ public class CommandParameterValueSource implements CommandParameterType
 	randomList.add(new CommandParameterDouble());
 	randomList.add(new CommandParameterDouble());
 	parameterLists.put("random", new CommandParameterList(randomList));
+
+        if(root) {
+            List<CommandParameterType> multiList = new ArrayList<>();
+            for(int i = 0; i < 10; i++) {
+                multiList.add(new CommandParameterValueSource(false));
+                multiList.add(new CommandParameterInteger());
+                multiList.add(new CommandParameterInteger());
+            }
+            parameterLists.put("multi", new CommandParameterList(multiList, 3));
+        }
+    }
+
+    public CommandParameterValueSource() {
+        this(true);
     }
     
     public boolean isValid(String value) {
@@ -102,6 +118,19 @@ public class CommandParameterValueSource implements CommandParameterType
 	    List<Object> parameters = (List<Object>) parameterLists.get("random").getValue(val);
 	    return new RandomValueSource((double) parameters.get(0), (double) parameters.get(1));
 	}
+        else if(type.equals("multi")) {
+            List<Object> parameters = (List<Object>) parameterLists.get("multi").getValue(val);
+            if(parameters.size() % 3 != 0) {
+                throw new IllegalArgumentException("Multi value source parameter error.");
+            }
+            MultiValueSource mvs = new MultiValueSource();
+            for(int i = 0; i < parameters.size() / 3; i++) {
+                mvs.addValueSource((ValueSource) parameters.get(i * 3),
+                                   (Integer) parameters.get(i * 3 + 1),
+                                   (Integer) parameters.get(i * 3 + 2));
+            }
+            return mvs;
+        }
         return null;
     }
 }

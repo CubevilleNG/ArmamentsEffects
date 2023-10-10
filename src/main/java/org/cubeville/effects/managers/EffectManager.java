@@ -14,11 +14,16 @@ public class EffectManager implements ConfigurationSerializable
 {
     List<Effect> effects;
     static EffectManager instance;
+    private static int runningEffectId = 0;
 
     public static EffectManager getInstance() {
         return instance;
     }
 
+    public static int getNewRunningEffectId() {
+        return runningEffectId++;
+    }
+    
     public EffectManager(Map<String, Object> config) {
         effects = (List<Effect>) config.get("effects");
         instance = this;
@@ -69,10 +74,10 @@ public class EffectManager implements ConfigurationSerializable
         return effects.get(id);
     }
 
-    public List<String> getEffectInfo(String name, boolean detailed) {
+    public List<String> getEffectInfo(String name, boolean detailed, String limit) {
         Effect effect = getEffectByName(name);
         if(effect == null) return null;
-        return effect.getInfo(detailed);
+        return effect.getInfo(detailed, limit);
     }
 
     public void updateExternalEffectHookReferences() {
@@ -86,5 +91,16 @@ public class EffectManager implements ConfigurationSerializable
                 }
             }
         }
+    }
+
+    public boolean isEffectInUseAsExternalEffect(String effectName) {
+        for(Effect effect: effects) {
+            if(effect instanceof EffectWithHook) {
+                EffectWithHook e = (EffectWithHook) effect;
+                Set<String> effectNames = e.getExternalEffectNames();
+                if(effectNames.contains(effectName)) return true;
+            }
+        }
+        return false;
     }
 }

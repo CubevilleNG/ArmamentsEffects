@@ -53,7 +53,7 @@ public class SmoothSnowEffect extends EffectWithLocation
         // }
     }
 
-    public List<String> getInfo(boolean detailed) {
+    public List<String> getInfo(boolean detailed, String limit) {
         return getInfoBase();
     }
 

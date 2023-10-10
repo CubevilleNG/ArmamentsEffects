@@ -34,8 +34,10 @@ public class SinewaveValueSource implements ValueSource
 	double r = Math.toRadians(degreesPerStep * step + degreesOffset);
 	if(abs)
 	    return Math.abs(Math.sin(r) * size) + sizeOffset;
-	else
+	else {
+            System.out.println("Step " + step + ": " + (Math.sin(r) * size + sizeOffset));
 	    return Math.sin(r) * size + sizeOffset;
+        }
     }
 
     public Map<String, Object> serialize() {
@@ -48,7 +50,7 @@ public class SinewaveValueSource implements ValueSource
 	return ret;
     }
 
-    public String getInfo() {
+    public String getInfo(boolean detailed) {
 	return "Sinewave " + degreesOffset + "+" + degreesPerStep + ", " + sizeOffset + "+-" + size + (abs ? " abs" : "");
     }
 }

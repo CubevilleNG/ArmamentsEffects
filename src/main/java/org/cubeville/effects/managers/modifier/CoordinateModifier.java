@@ -8,5 +8,5 @@ import org.bukkit.util.Vector;
 public interface CoordinateModifier extends ConfigurationSerializable
 {
     public List<Vector> modify(List<Vector> coordinates, int step);
-    public String getInfo();
+    public String getInfo(boolean detailed);
 }

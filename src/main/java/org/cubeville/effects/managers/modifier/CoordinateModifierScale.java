@@ -39,7 +39,7 @@ public class CoordinateModifierScale implements CoordinateModifier
 	return ret;
     }
 
-    public String getInfo() {
-	return "Scale " + source.getInfo();
+    public String getInfo(boolean detailed) {
+	return "Scale " + source.getInfo(detailed);
     }
 }

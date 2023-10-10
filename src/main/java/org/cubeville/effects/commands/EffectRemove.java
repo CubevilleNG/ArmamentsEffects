@@ -21,7 +21,8 @@ public class EffectRemove extends Command
 
     public CommandResponse execute(Player player, Set<String> flags, Map<String, Object> parameters, List<Object> baseParameters) throws CommandExecutionException {
         Effect effect = (Effect) baseParameters.get(0);
-        if(Registry.getInstance().isEffectInUse(effect)) throw new CommandExecutionException("Effect is in use, removal not possible.");
+        if(Registry.getInstance().isEffectInUse(effect)) throw new CommandExecutionException("Effect is in use by hook, removal not possible.");
+        if(EffectManager.getInstance().isEffectInUseAsExternalEffect(effect.getName())) throw new CommandExecutionException("Effect is in use by other effect, removal not possible.");
         EffectManager.getInstance().removeEffect(effect);
         CommandUtil.saveConfig();
         return null;

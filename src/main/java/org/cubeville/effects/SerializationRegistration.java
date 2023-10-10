@@ -24,6 +24,7 @@ public class SerializationRegistration
         ConfigurationSerialization.registerClass(org.cubeville.effects.hooks.ProjectileLaunchHookPlayerLocation.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.hooks.ProjectileLaunchHookCancelEvent.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.hooks.ProjectileHitHookHitLocation.class);
+        ConfigurationSerialization.registerClass(org.cubeville.effects.managers.ArmorStandProperties.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.CommandWithLivingEntityEffect.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.CommandWithLocationEffect.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.ParticleEffect.class);
@@ -43,6 +44,7 @@ public class SerializationRegistration
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.value.ConstantValueSource.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.value.LinearValueSource.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.value.ListValueSource.class);
+        ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.value.MultiValueSource.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.value.SinewaveValueSource.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.managers.sources.value.RandomValueSource.class);
         ConfigurationSerialization.registerClass(org.cubeville.effects.registry.RegistryHook.class);
