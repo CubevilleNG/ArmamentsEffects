@@ -59,6 +59,7 @@ public class ParticleCommandHelper
         command.addFlag("armorstandbodyitem");
         command.addFlag("armorstandlefthanditem");
         command.addFlag("armorstandrighthanditem");
+        command.addFlag("armorstandlegsitem");
         command.addFlag("armorstandfeetitem");
         command.addParameter("armorstandarms", true, new CommandParameterBoolean());
         command.addParameter("armorstandvisible", true, new CommandParameterBoolean());
@@ -320,31 +321,37 @@ public class ParticleCommandHelper
 
         if(flags.contains("armorstandheaditem")) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand head item command.");
+            if(item.getType() == Material.AIR) item = null;
             component.createOrGetArmorStandProperties().headItem = item;
         }
         
         if(flags.contains("armorstandbodyitem")) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand body item command.");
+            if(item.getType() == Material.AIR) item = null;
             component.createOrGetArmorStandProperties().bodyItem = item;
         }
         
         if(flags.contains("armorstandlefthanditem")) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand left hand item command.");
+            if(item.getType() == Material.AIR) item = null;
             component.createOrGetArmorStandProperties().leftHandItem = item;
         }
         
         if(flags.contains("armorstandrighthanditem")) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand right hand item command.");
+            if(item.getType() == Material.AIR) item = null;
             component.createOrGetArmorStandProperties().rightHandItem = item;
         }
         
+        if(flags.contains("armorstandlegsitem")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item.getType() == Material.AIR) item = null;
+            component.createOrGetArmorStandProperties().legsItem = item;
+        }
+
         if(flags.contains("armorstandfeetitem")) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item == null || item.getType() == Material.AIR) throw new IllegalArgumentException("Must be holding an item for the armor stand feet item command.");
+            if(item.getType() == Material.AIR) item = null;
             component.createOrGetArmorStandProperties().feetItem = item;
         }
         

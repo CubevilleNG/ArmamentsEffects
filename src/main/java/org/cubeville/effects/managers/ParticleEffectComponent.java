@@ -242,13 +242,92 @@ public class ParticleEffectComponent implements ConfigurationSerializable
         }
 
         if(isArmorStandActive()) {
+
+            ArmorStandProperties p = armorStandProperties;
+            
             String ai = "  §eArmor stand:§r ";
-            ai += armorStandProperties.visible ? "visible" : "invisible";
-            ai += armorStandProperties.hasArms ? ", arms" : ", no arms";
-            ai += armorStandProperties.small ? ", small" : "";
+            ai += p.visible ? "visible" : "invisible";
+            ai += p.hasArms ? ", arms" : ", no arms";
+            ai += p.small ? ", small" : "";
             ret.add(ai);
+            
+            if(!isZero(p.rotation))
+                ret.add("    Rotation: " + p.rotation.getInfo(detailed));
+            if(!isZero(p.headPoseX))
+                ret.add("    Head X: " + p.headPoseX.getInfo(detailed));
+            if(!isZero(p.headPoseY))
+                ret.add("    Head Y: " + p.headPoseY.getInfo(detailed));
+            if(!isZero(p.headPoseZ))
+                ret.add("    Head Z: " + p.headPoseZ.getInfo(detailed));
+            if(!isZero(p.bodyPoseX))
+                ret.add("    Body X: " + p.bodyPoseX.getInfo(detailed));
+            if(!isZero(p.bodyPoseY))
+                ret.add("    Body Y: " + p.bodyPoseY.getInfo(detailed));
+            if(!isZero(p.bodyPoseZ))
+                ret.add("    Body Z: " + p.bodyPoseZ.getInfo(detailed));
+            if(!isZero(p.leftArmPoseX))
+                ret.add("    LeftArm X: " + p.leftArmPoseX.getInfo(detailed));
+            if(!isZero(p.leftArmPoseY))
+                ret.add("    LeftArm Y: " + p.leftArmPoseY.getInfo(detailed));
+            if(!isZero(p.leftArmPoseZ))
+                ret.add("    LeftArm Z: " + p.leftArmPoseZ.getInfo(detailed));
+            if(!isZero(p.rightArmPoseX))
+                ret.add("    RightArm X: " + p.rightArmPoseX.getInfo(detailed));
+            if(!isZero(p.rightArmPoseY))
+                ret.add("    RightArm Y: " + p.rightArmPoseY.getInfo(detailed));
+            if(!isZero(p.rightArmPoseZ))
+                ret.add("    RightArm Z: " + p.rightArmPoseZ.getInfo(detailed));
+            if(!isZero(p.leftLegPoseX))
+                ret.add("    LeftLeg X: " + p.leftLegPoseX.getInfo(detailed));
+            if(!isZero(p.leftLegPoseY))
+                ret.add("    LeftLeg Y: " + p.leftLegPoseY.getInfo(detailed));
+            if(!isZero(p.leftLegPoseZ))
+                ret.add("    LeftLeg Z: " + p.leftLegPoseZ.getInfo(detailed));
+            if(!isZero(p.rightLegPoseX))
+                ret.add("    RightLeg X: " + p.rightLegPoseX.getInfo(detailed));
+            if(!isZero(p.rightLegPoseY))
+                ret.add("    RightLeg Y: " + p.rightLegPoseY.getInfo(detailed));
+            if(!isZero(p.rightLegPoseZ))
+                ret.add("    RightLeg Z: " + p.rightLegPoseZ.getInfo(detailed));
+
+            if(p.headItem != null) {
+                String i = p.headItem.getType().toString().toLowerCase();
+                if(p.headItem.getItemMeta() != null && p.headItem.getItemMeta().getDisplayName() != null && p.headItem.getItemMeta().getDisplayName().equals("") == false)
+                    i += ": " + p.headItem.getItemMeta().getDisplayName() + "§r";
+                ret.add("    Head item: " + i);
+            }
+            if(p.bodyItem != null) {
+                String i = p.bodyItem.getType().toString().toLowerCase();
+                if(p.bodyItem.getItemMeta() != null && p.bodyItem.getItemMeta().getDisplayName() != null && p.bodyItem.getItemMeta().getDisplayName().equals("") == false)
+                    i += ": " + p.bodyItem.getItemMeta().getDisplayName() + "§r";
+                ret.add("    Body item: " + i);
+            }
+            if(p.leftHandItem != null) {
+                String i = p.leftHandItem.getType().toString().toLowerCase();
+                if(p.leftHandItem.getItemMeta() != null && p.leftHandItem.getItemMeta().getDisplayName() != null && p.leftHandItem.getItemMeta().getDisplayName().equals("") == false)
+                    i += ": " + p.leftHandItem.getItemMeta().getDisplayName() + "§r";
+                ret.add("    Left hand item: " + i);
+            }
+            if(p.rightHandItem != null) {
+                String i = p.rightHandItem.getType().toString().toLowerCase();
+                if(p.rightHandItem.getItemMeta() != null && p.rightHandItem.getItemMeta().getDisplayName() != null && p.rightHandItem.getItemMeta().getDisplayName().equals("") == false)
+                    i += ": " + p.rightHandItem.getItemMeta().getDisplayName() + "§r";
+                ret.add("    Right hand item: " + i);
+            }
+            if(p.legsItem != null) {
+                String i = p.legsItem.getType().toString().toLowerCase();
+                if(p.legsItem.getItemMeta() != null && p.legsItem.getItemMeta().getDisplayName() != null && p.legsItem.getItemMeta().getDisplayName().equals("") == false)
+                    i += ": " + p.legsItem.getItemMeta().getDisplayName() + "§r";
+                ret.add("    Legs item: " + i);
+            }
+            if(p.feetItem != null) {
+                String i = p.feetItem.getType().toString().toLowerCase();
+                if(p.feetItem.getItemMeta() != null && p.feetItem.getItemMeta().getDisplayName() != null && p.feetItem.getItemMeta().getDisplayName().equals("") == false)
+                    i += ": " + p.feetItem.getItemMeta().getDisplayName() + "§r";
+                ret.add("    Feet item: " + i);
+            }
         }
-        
+
 	if(modifiers.size() > 0) {
 	    ret.add("  Modifiers:");
             int cnt = 0;
@@ -260,7 +339,11 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 	    ret.add("  Timeline:");
             int cnt = 0;
 	    for(ParticleEffectTimelineEntry e: timeline) {
-		ret.add("    §7" + (++cnt) + ")§r " + e.getStepStart() + "-" + (e.getStepStart() + e.getStepCount()) + "x" + e.getStepRepeat() + " (" + e.getLocationOffset() + "/" + e.getEffectOffset() + ")");
+                String s = "    §7" + (++cnt) + ")§r " + e.getStepStart();
+                if(e.getStepCount() > 1)
+                    s += "-" + (e.getStepStart() + e.getStepCount() - 1);
+                s += "x" + e.getStepRepeat() + " (" + e.getLocationOffset() + "/" + e.getEffectOffset() + ")";
+                ret.add(s);
 	    }
 	}
         if(blockCollisionCheck || entityCollisionCheck) {
@@ -482,5 +565,11 @@ public class ParticleEffectComponent implements ConfigurationSerializable
 
     public final void removeArmorStand() {
         armorStandProperties = null;
+    }
+
+    private boolean isZero(ValueSource valueSource) {
+        if(! (valueSource instanceof ConstantValueSource)) return false;
+        ConstantValueSource cvs = (ConstantValueSource) valueSource;
+        return cvs.getValue(0) <= 0.00001 && cvs.getValue(0) >= -0.00001;
     }
 }

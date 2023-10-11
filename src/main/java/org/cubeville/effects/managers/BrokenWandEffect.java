@@ -84,7 +84,6 @@ public class BrokenWandEffect extends EffectWithLivingEntity
             Vector newDirection = new Vector(-direction.getX() * horizontalVelocity,
                                              verticalVelocity,
                                              -direction.getZ() * horizontalVelocity);
-            System.out.println("Set velocity on player: " + newDirection);
             ((Player) entity).setVelocity(newDirection);
         }
     }

@@ -42,6 +42,7 @@ public class ArmorStandProperties implements ConfigurationSerializable
     public ItemStack leftHandItem = null;
     public ItemStack rightHandItem = null;
     public ItemStack bodyItem = null;
+    public ItemStack legsItem = null;
     public ItemStack feetItem = null;
 
     public ArmorStandProperties() {

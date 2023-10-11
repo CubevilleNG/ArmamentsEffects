@@ -14,49 +14,10 @@ import org.cubeville.effects.registry.Registry;
 public class EventListener implements Listener
 {
     private Registry registry;
-    
+
     public EventListener() {
 	EffectManager em = EffectManager.getInstance();
 	registry = new Registry();
-	// {
-	//     List<Effect> sparkleStickEffects = new ArrayList<>();
-	//     sparkleStickEffects.add(em.getEffectByName("sparkle"));
-	//     sparkleStickEffects.add(em.getEffectByName("sparklesound"));
-	//     List<Effect> sparkleStickNoTargetEffects = new ArrayList<>();
-	//     sparkleStickNoTargetEffects.add(em.getEffectByName("sparklenosound"));
-	//     registry.registerInteractEvent("SparkleStick", new InteractHookTargetLocation(sparkleStickEffects, sparkleStickNoTargetEffects));
-	//     registry.registerInteractEvent("SparkleStick", new InteractHookCancelEvent());
-	//     registry.registerDamageOtherEntityEvent("SparkleStick", new DamageOtherEntityHookCancelEvent());
-	// }
-	// {
-	//     registry.registerInteractEvent("Superball", new InteractHookParticleDirected("jumpy", 0, 2, .5, true, 0));
-	//     registry.registerInteractEvent("Superball", new InteractHookCancelEvent());
-	// }
-	// {
-	//     registry.registerInteractEvent("§2Wand", new InteractHookParticleDirected("modifiers", 1.0, 2, .5, false, 0));
-	//     registry.registerInteractEvent("§2Wand", new InteractHookCancelEvent());
-	// }
-	// {
-	//     registry.registerInteractEvent("DNA", new InteractHookParticleDirected("dna", 0, 5, .5, false, 0));
-	//     registry.registerInteractEvent("DNA", new InteractHookCancelEvent());
-	// }
-	// {
-	//     registry.registerInteractEvent("Crystal", new InteractHookParticleDirected("crystal", 0, 5, 0, true, 90));
-	//     registry.registerInteractEvent("Crystal", new InteractHookCancelEvent());
-	// }
-        // {
-        //     registry.registerInteractEvent("Sit", new InteractHookPlayer(em.getEffectByName("sit")));
-        // }
-        // {
-        //     registry.registerInteractEvent("SmoothSnow", new InteractHookBlockLocation(em.getEffectByName("smoothsnow")));
-        // }
-        // {
-        //     registry.registerDamageOtherEntityEvent("Wiper", new DamageOtherEntityHookTargetEntity(em.getEffectByName("removeentity")));
-	//     registry.registerDamageOtherEntityEvent("Wiper", new DamageOtherEntityHookCancelEvent());
-        // }
-        // {
-        //     registry.registerInteractEvent("GimmeHorsey", new InteractHookPlayerLocation(em.getEffectByName("spawnhorse")));
-        // }
     }
 
     public void setRegistry(Registry registry) {
@@ -96,5 +57,4 @@ public class EventListener implements Listener
     public void process(BlockBreakEvent event) {
         registry.processBlockBreakEvent(event);
     }
-    
 }

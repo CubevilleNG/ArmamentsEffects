@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bukkit.World;
+import org.bukkit.Chunk;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.entity.ArmorStand;
@@ -43,7 +45,6 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
 
     // 1st int: runningEffectId, 2nd int: Component, 3rd int: Timeline-No
     private HashMap<Integer, HashMap<Integer, HashMap<Integer, ArmorStand>>> armorstands = new HashMap<>();
-
     private int stepsLoop;
     private int repeatCount; // 0 = indefinitely, not recommended though
     private int repeatOffset;
@@ -84,6 +85,30 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
         play(0, new StaticParticleEffectLocationCalculator(location), null, EffectManager.getNewRunningEffectId());
     }
 
+    private void removeArmorStand(ArmorStand as) {
+        if(as != null) {
+            int chunkx = (int)(Math.floor(as.getLocation().getX()) / 16);
+            int chunkz = (int)(Math.floor(as.getLocation().getZ()) / 16);
+            World world = as.getLocation().getWorld();
+            if(world.isChunkLoaded(chunkx, chunkz) == false) {
+                Chunk chunk = world.getChunkAt(chunkx, chunkz);
+                org.bukkit.entity.Entity entities[] = chunk.getEntities();
+                for(int i = 0; i < entities.length; i++) {
+                    if(as.getUniqueId().equals(entities[i].getUniqueId())) {
+                        entities[i].remove();
+                    }
+                }
+            }
+            else {
+                List<org.bukkit.entity.Entity> entities = world.getEntities();
+                for(org.bukkit.entity.Entity e: entities) {
+                    if(e.getUniqueId().equals(as.getUniqueId()))
+                        e.remove();
+                }
+            }
+        }
+    }
+
     private void removeArmorStandForTimeline(int id, int componentNo, int timelineNo) {
         HashMap<Integer, HashMap<Integer, ArmorStand>> m = armorstands.get(id);
         if(m == null) return;
@@ -92,9 +117,7 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
         if(am == null) return;
 
         ArmorStand as = am.remove(timelineNo);
-        if(as != null) {
-            as.remove();
-        }
+        removeArmorStand(as);
     }
     
     private void removeArmorStandsForId(int id) {
@@ -105,11 +128,11 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
             HashMap<Integer, ArmorStand> am = m.get(componentNo);
             if(am == null) continue;
             for(ArmorStand as: am.values()) {
-                as.remove();
+                removeArmorStand(as);
             }
         }
     }
-    
+
     public boolean play(int step, ParticleEffectLocationCalculator locationCalculator, Player player, int id) {
         if(!hasStep(step)) {
             removeArmorStandsForId(id);
@@ -168,6 +191,7 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
                             }
                             
                             ArmorStand as = tlm.get(timelineNo);
+
                             boolean standIsNew = false;
                             if(as == null) {
                                 standIsNew = true;
@@ -183,11 +207,11 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
                                 entity.get().b(armorStandLocation.getX(), armorStandLocation.getY(), armorStandLocation.getZ(), armorStandLocation.getYaw(), armorStandLocation.getPitch());
                                 ws.tryAddFreshEntityWithPassengers(entity.get(), CreatureSpawnEvent.SpawnReason.CUSTOM);
                                 as = (ArmorStand)(entity.get().getBukkitEntity());
-
+                                
                                 // TODO: Would be nice if we could move these two to nbt too:
                                 as.setBasePlate(false);
                                 as.setArms(properties.hasArms);
-
+                                
                                 for(EquipmentSlot slot: Arrays.asList(EquipmentSlot.CHEST, EquipmentSlot.FEET, EquipmentSlot.HAND, EquipmentSlot.HEAD, EquipmentSlot.LEGS, EquipmentSlot.OFF_HAND)) {
                                     as.addEquipmentLock(slot, ArmorStand.LockType.REMOVING_OR_CHANGING);
                                     as.addEquipmentLock(slot, ArmorStand.LockType.ADDING);
@@ -218,7 +242,7 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
                                                                   Math.toRadians(properties.rightArmPoseY.getValue(effectStep)),
                                                                   Math.toRadians(properties.rightArmPoseZ.getValue(effectStep))));
                             }
-
+                            
                             if(standIsNew) {
                                 if(properties.headItem != null) as.getEquipment().setHelmet(properties.headItem, true);
                                 if(properties.bodyItem != null) as.getEquipment().setChestplate(properties.bodyItem, true);

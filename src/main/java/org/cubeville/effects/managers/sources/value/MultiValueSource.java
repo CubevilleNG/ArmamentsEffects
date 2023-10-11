@@ -55,7 +55,12 @@ public class MultiValueSource implements ValueSource
     
     public String getInfo(boolean detailed) {
         if(detailed) {
-            return "Multi x" + valueSources.size();
+            String ret = "Multi: ";
+            for(int i = 0; i < valueSources.size(); i++) {
+                if(i > 0) ret += ", ";
+                ret += valueSources.get(i).getInfo(true) + " (" + durations.get(i) + "/" + offsets.get(i) + ")";
+            }
+            return ret;
         }
         else {
             return "Multi x" + valueSources.size();

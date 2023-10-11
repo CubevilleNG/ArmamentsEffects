@@ -49,7 +49,6 @@ public class SpawnFrogWithLivingEntityEffect extends EffectWithLivingEntity {
 
     public void play(LivingEntity entity, Event event) {
         if(event instanceof PlayerInteractEvent) {
-            System.out.println("Spawning frog variant " + variant);
             if(entity instanceof Player) {
                 Location location = entity.getTargetBlock(null, 5).getLocation().add(0.5, 1, 0.5);
                 Frog frog = (Frog) entity.getWorld().spawnEntity(location, EntityType.FROG);

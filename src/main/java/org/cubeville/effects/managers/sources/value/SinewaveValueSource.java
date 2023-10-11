@@ -35,7 +35,6 @@ public class SinewaveValueSource implements ValueSource
 	if(abs)
 	    return Math.abs(Math.sin(r) * size) + sizeOffset;
 	else {
-            System.out.println("Step " + step + ": " + (Math.sin(r) * size + sizeOffset));
 	    return Math.sin(r) * size + sizeOffset;
         }
     }

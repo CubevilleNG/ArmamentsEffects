@@ -36,7 +36,6 @@ public class CommandWithLivingEntityEffect extends EffectWithLivingEntity
             Player p = (Player) entity;
             c = c.replace("%player%", p.getName());
         }
-        System.out.println("Running command: " + c);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c);
     }
 
