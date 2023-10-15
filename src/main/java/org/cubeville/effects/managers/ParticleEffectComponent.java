@@ -128,8 +128,10 @@ public class ParticleEffectComponent implements ConfigurationSerializable
         else
             entityCollisionCheck = false;
 
-        if(config.get("externalEffectName") != null)
+        if(config.get("externalEffectName") != null) {
             externalEffectName = (String) config.get("externalEffectName");
+            System.out.println("Loading external effect name: " + externalEffectName);
+        }
 
         if(config.get("armorStandProperties") != null) {
             armorStandProperties = (ArmorStandProperties) config.get("armorStandProperties");
@@ -216,7 +218,14 @@ public class ParticleEffectComponent implements ConfigurationSerializable
     public List<String> getInfo(boolean detailed) {
 	List<String> ret = new ArrayList<>();
 	ret.add("  Source: " + coordinates.getInfo(detailed));
-        if(externalEffectName != null) ret.add("  §eExternal effect:§r " + externalEffectName);
+
+        System.out.println("External effect name: " + externalEffectName);
+        if(externalEffectName != null) {
+            System.out.println("Effect name: " + externalEffectName + ", effect: " + externalEffect);
+            String s = "  §eExternal effect:§r " + externalEffectName;
+            if(externalEffect == null) s += " §c(Not found)§r";
+            ret.add(s);
+        }
 
         if(particle != null) ret.add("  §eParticle:§r " + particle);
         if(particle != null) {
@@ -542,6 +551,9 @@ public class ParticleEffectComponent implements ConfigurationSerializable
     public final void setExternalEffect(Effect externalEffect) {
         if(externalEffect instanceof EffectWithLocation) {
             this.externalEffect = (EffectWithLocation) externalEffect;
+        }
+        else if(externalEffect == null) {
+            this.externalEffect = null;
         }
         else {
             this.externalEffectName = null;
