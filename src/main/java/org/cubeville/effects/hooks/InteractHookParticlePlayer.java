@@ -85,7 +85,7 @@ public class InteractHookParticlePlayer implements InteractHook
         return info;
     }
     
-    public void process(PlayerInteractEvent rawEvent) {
+    public boolean process(PlayerInteractEvent rawEvent) {
         PlayerInteractEvent event = (PlayerInteractEvent) rawEvent;
         Player player = event.getPlayer();
 	Location loc = player.getLocation().clone();
@@ -93,6 +93,7 @@ public class InteractHookParticlePlayer implements InteractHook
         if(player.isSneaking()) loc.setY(loc.getY() + ySneakShift);
 	if(fixedPitch) loc.setPitch((float)pitch);
 	new ParticleEffectTimedRunnable(Effects.getInstance(), player, effect, stepsPerTick, speed, loc, followPlayerLocation, followPlayerYaw, followPlayerPitch).runTaskTimer(Effects.getInstance(), 1, 1);
+        return true;
     }
 
     public void playAt(Location location) {

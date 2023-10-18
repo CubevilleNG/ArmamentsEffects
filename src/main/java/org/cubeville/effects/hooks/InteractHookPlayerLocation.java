@@ -52,9 +52,10 @@ public class InteractHookPlayerLocation implements InteractHook
         return info;
     }
 
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
         Location loc = event.getPlayer().getLocation();
         playAt(loc);
+        return true;
     }
 
     public void playAt(Location location) {

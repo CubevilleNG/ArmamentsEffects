@@ -24,9 +24,10 @@ public class InteractHookRemoveItem implements InteractHook
         return "RemoveItem";
     }
 
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
 	// Find item stack in player's hand and remove one
 	event.getItem().setAmount(event.getItem().getAmount() - 1);
+        return true;
     }
 
     public boolean usesEffect(Effect effect) {

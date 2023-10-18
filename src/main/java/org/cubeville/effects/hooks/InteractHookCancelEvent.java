@@ -24,8 +24,9 @@ public class InteractHookCancelEvent implements InteractHook
         return "CancelEvent";
     }
 
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
 	event.setCancelled(true);
+        return true;
     }
 
     public boolean usesEffect(Effect effect) {

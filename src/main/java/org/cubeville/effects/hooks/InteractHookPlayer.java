@@ -33,8 +33,9 @@ public class InteractHookPlayer implements InteractHook
         return "Player: " + effect.getName();
     }
 
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
         effect.play(event.getPlayer(), event);
+        return true;
     }
 
     public boolean usesEffect(Effect effect) {

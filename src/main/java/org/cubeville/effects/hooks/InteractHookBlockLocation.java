@@ -26,10 +26,11 @@ public class InteractHookBlockLocation implements InteractHook
         return "Interact -> BlockLocation: " + effect.getName();
     }
     
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             effect.play(event.getClickedBlock().getLocation());
         }
+        return true;
     }
 
     public boolean usesEffect(Effect effect) {

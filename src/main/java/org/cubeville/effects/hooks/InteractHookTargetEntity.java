@@ -35,13 +35,15 @@ public class InteractHookTargetEntity implements InteractHook
         return "TargetEntity: " + effect.getName();
     }
 
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
 	Player player = event.getPlayer();
         LivingEntity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000);
 
-        if(target == null) return;
+        if(target == null) return true;
 
         effect.play(target, event);
+
+        return true;
     }
 
     public boolean usesEffect(Effect effect) {

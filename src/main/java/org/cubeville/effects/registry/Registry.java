@@ -188,9 +188,12 @@ public class Registry implements ConfigurationSerializable
 
         RegistryHook<InteractHook> rh = interactEvents.get(itemName);
         boolean isPermitted = rh.isPermitted(event.getPlayer().getUniqueId());
+        boolean processing = true;
         for(InteractHook hook: rh.getHooks()) {
-            if(isPermitted || hook.alwaysActive()) {
-                hook.process(event);
+            if((processing && isPermitted) || hook.alwaysActive()) {
+                if(hook.process(event) == false) {
+                    processing = false;
+                }
             }
         }
     }

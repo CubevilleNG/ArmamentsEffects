@@ -25,6 +25,7 @@ public class HookCreateInteractTargetLocationParticlePlayerCommand extends Comma
         addParameter("step", true, new CommandParameterDouble());
         addParameter("yoffset", true, new CommandParameterDouble());
         addFlag("origindir");
+        addFlag("condstop");
     }
 
     public CommandResponse execute(Player player, Set<String> flags, Map<String, Object> parameters, List<Object> baseParameters) throws CommandExecutionException {
@@ -42,7 +43,8 @@ public class HookCreateInteractTargetLocationParticlePlayerCommand extends Comma
         double fixedpitchval = 0.0;
         if(fixedpitch) fixedpitchval = (double) parameters.get("fixedpitch");
         boolean origindir = flags.contains("origindir");
-        Registry.getInstance().registerEvent(itemName, new InteractHookTargetLocationParticlePlayer(effect.getName(), yoffset, speed, step, fixedpitch, fixedpitchval, origindir));
+        boolean condstop = flags.contains("condstop");
+        Registry.getInstance().registerEvent(itemName, new InteractHookTargetLocationParticlePlayer(effect.getName(), yoffset, step, speed, fixedpitch, fixedpitchval, origindir, condstop));
         CommandUtil.saveConfig();
 
         return new CommandResponse("Hook created.");

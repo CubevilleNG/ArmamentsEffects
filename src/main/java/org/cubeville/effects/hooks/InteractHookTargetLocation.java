@@ -77,8 +77,8 @@ public class InteractHookTargetLocation implements InteractHook
             + Conversions.joinStringList(Conversions.getListOfEffectNames(noTargetEffects), ",") + "]"
             + (fixedPitch ? " (fixed pitch)" : "");
     }
-    
-    public void process(PlayerInteractEvent event) {
+
+    public boolean process(PlayerInteractEvent event) {
 	Player player = event.getPlayer();
         Entity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000);
 
@@ -102,6 +102,8 @@ public class InteractHookTargetLocation implements InteractHook
 		((EffectWithLocation) effect).play(loc);
 	    }
 	}
+        
+        return true;
     }
 
     public boolean usesEffect(Effect effect) {

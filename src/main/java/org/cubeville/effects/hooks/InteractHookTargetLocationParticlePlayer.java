@@ -26,8 +26,9 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
     private boolean fixedPitch;
     private double pitch;
     private boolean originDir;
+    private boolean targetFoundStopsProcessing;
     
-    public InteractHookTargetLocationParticlePlayer(String effectName, double yOffset, double stepsPerTick, double speed, boolean fixedPitch, double pitch, boolean originDir) {
+    public InteractHookTargetLocationParticlePlayer(String effectName, double yOffset, double stepsPerTick, double speed, boolean fixedPitch, double pitch, boolean originDir, boolean targetFoundStopsProcessing) {
 	this.effect = (ParticleEffect) EffectManager.getInstance().getEffectByName(effectName);
 	this.yOffset = yOffset;
 	this.stepsPerTick = stepsPerTick;
@@ -35,6 +36,7 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
 	this.fixedPitch = fixedPitch;
 	this.pitch = pitch;
         this.originDir = originDir;
+        this.targetFoundStopsProcessing = targetFoundStopsProcessing;
     }
 
     public InteractHookTargetLocationParticlePlayer(Map<String, Object> config) {
@@ -51,6 +53,12 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
         else {
             this.originDir = false;
         }
+        if(config.get("targetFoundStopsProcessing") != null) {
+            this.targetFoundStopsProcessing = (boolean) config.get("targetFoundStopsProcessing");
+        }
+        else {
+            this.targetFoundStopsProcessing = false;
+        }
     }
     
     public Map<String, Object> serialize() {
@@ -62,6 +70,7 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
         ret.put("pitch", pitch);
         ret.put("fixedPitch", fixedPitch);
         ret.put("originDir", originDir);
+        ret.put("targetFoundStopsProcessing", targetFoundStopsProcessing);
         return ret;
     }
 
@@ -72,13 +81,16 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
         if(stepsPerTick != 1.0) info += ", step = " + stepsPerTick;
         if(speed != 1.0) info += ", speed = " + speed;
         if(originDir) info += ", od";
+        if(targetFoundStopsProcessing) info += ", cs";
         return info;
     }
 
-    public void process(PlayerInteractEvent event) {
+    public boolean process(PlayerInteractEvent event) {
 	Player player = event.getPlayer();
         Entity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000);
-        if(target == null) return;
+        if(target == null) {
+            return true;
+        }
         Location loc = target.getLocation().clone();
         loc.setY(loc.getY() + yOffset);
         if(originDir) {
@@ -87,6 +99,7 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
         }
         if(fixedPitch) loc.setPitch((float)pitch);
         new ParticleEffectTimedRunnable(Effects.getInstance(), player, effect, stepsPerTick, speed, loc, false, false, false).runTaskTimer(Effects.getInstance(), 1, 1);
+        return !targetFoundStopsProcessing;
     }
 
     public boolean usesEffect(Effect effect) {
