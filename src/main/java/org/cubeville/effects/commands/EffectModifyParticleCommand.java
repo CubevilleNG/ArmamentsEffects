@@ -38,7 +38,7 @@ public class EffectModifyParticleCommand extends Command {
             }
         }
         ParticleEffectComponent component = effect.getComponents().get(componentIdx);
-        ParticleCommandHelper.setComponentValues(component, parameters, flags, player);
+        ParticleCommandHelper.setComponentValues(component, parameters, flags, player, effect);
         CommandUtil.saveConfig();
         return new CommandResponse("Effect component successfully " + (create ? "created." : "modified."));
     }

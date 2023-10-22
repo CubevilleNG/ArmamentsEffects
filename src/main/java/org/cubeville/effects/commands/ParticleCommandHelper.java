@@ -111,10 +111,13 @@ public class ParticleCommandHelper
             command.addParameter("scale2d+", true, new CommandParameterList(pl));
         }
         command.addParameter("modifier-", true, new CommandParameterInteger());
+        command.addParameter("copymodifiers", true, new CommandParameterInteger());
+        command.addFlag("clearmodifiers");
         command.addParameter("material", true, new CommandParameterEnum(Material.class));
         command.addFlag("cleartimelines");
         command.addParameter("timeline+", true, new CommandParameterListInteger(5));
         command.addParameter("timeline-", true, new CommandParameterInteger());
+        command.addParameter("copytimelines", true, new CommandParameterInteger());
         command.addParameter("red", true, new CommandParameterValueSource());
         command.addParameter("green", true, new CommandParameterValueSource());
         command.addParameter("blue", true, new CommandParameterValueSource());
@@ -133,7 +136,7 @@ public class ParticleCommandHelper
         if(parameters.containsKey("repeatoffset")) effect.setRepeatOffset((int) parameters.get("repeatoffset"));
     }
 
-    public static void setComponentValues(ParticleEffectComponent component, Map<String, Object> parameters, Set<String> flags, Player player) {
+    public static void setComponentValues(ParticleEffectComponent component, Map<String, Object> parameters, Set<String> flags, Player player, ParticleEffect parent) {
         int numberOfSources = 0;
         if(parameters.containsKey("constantsource")) numberOfSources++;
         if(parameters.containsKey("constantsource+")) numberOfSources++;
@@ -406,6 +409,28 @@ public class ParticleCommandHelper
             int index = (int) parameters.get("modifier-");
             if(index > 0 && index <= component.getModifiers().size()) {
                 component.getModifiers().remove(index - 1);
+            }
+        }
+
+        if(flags.contains("clearmodifiers")) {
+            System.out.println("Modifiers before clear: " + component.getModifiers().size());
+            component.deleteModifiers();
+            System.out.println("Modifiers after clear: " + component.getModifiers().size());
+        }
+        
+        if(parameters.containsKey("copymodifiers")) {
+            int index = (int) parameters.get("copymodifiers");
+            ParticleEffectComponent origin = parent.getComponents().get(index - 1);
+            for(CoordinateModifier m: origin.getModifiers()) {
+                component.addModifier(m);
+            }
+        }
+
+        if(parameters.containsKey("copytimelines")) {
+            int index = (int) parameters.get("copytimelines");
+            ParticleEffectComponent origin = parent.getComponents().get(index - 1);
+            for(ParticleEffectTimelineEntry tle: origin.getTimeline()) {
+                component.getTimeline().add(tle);
             }
         }
         

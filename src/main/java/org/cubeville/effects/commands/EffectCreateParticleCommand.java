@@ -26,7 +26,7 @@ public class EffectCreateParticleCommand extends Command
         ParticleCommandHelper.setEffectValues(effect, parameters);
         ParticleEffectComponent component = new ParticleEffectComponent();
         effect.addComponent(component);
-        ParticleCommandHelper.setComponentValues(component, parameters, flags, player);
+        ParticleCommandHelper.setComponentValues(component, parameters, flags, player, effect);
         EffectManager.getInstance().addEffect(effect);
         CommandUtil.saveConfig();
         return null;
