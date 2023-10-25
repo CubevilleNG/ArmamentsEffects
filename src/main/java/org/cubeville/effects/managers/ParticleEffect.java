@@ -86,27 +86,7 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
     }
 
     private void removeArmorStand(ArmorStand as) {
-        if(as != null) {
-            int chunkx = (int)(Math.floor(as.getLocation().getX()) / 16);
-            int chunkz = (int)(Math.floor(as.getLocation().getZ()) / 16);
-            World world = as.getLocation().getWorld();
-            if(world.isChunkLoaded(chunkx, chunkz) == false) {
-                Chunk chunk = world.getChunkAt(chunkx, chunkz);
-                org.bukkit.entity.Entity entities[] = chunk.getEntities();
-                for(int i = 0; i < entities.length; i++) {
-                    if(as.getUniqueId().equals(entities[i].getUniqueId())) {
-                        entities[i].remove();
-                    }
-                }
-            }
-            else {
-                List<org.bukkit.entity.Entity> entities = world.getEntities();
-                for(org.bukkit.entity.Entity e: entities) {
-                    if(e.getUniqueId().equals(as.getUniqueId()))
-                        e.remove();
-                }
-            }
-        }
+        as.remove();
     }
 
     private void removeArmorStandForTimeline(int id, int componentNo, int timelineNo) {
@@ -207,6 +187,7 @@ public class ParticleEffect extends EffectWithLocation implements EffectWithHook
                                 entity.get().b(armorStandLocation.getX(), armorStandLocation.getY(), armorStandLocation.getZ(), armorStandLocation.getYaw(), armorStandLocation.getPitch());
                                 ws.tryAddFreshEntityWithPassengers(entity.get(), CreatureSpawnEvent.SpawnReason.CUSTOM);
                                 as = (ArmorStand)(entity.get().getBukkitEntity());
+                                as.setPersistent(false);
                                 
                                 // TODO: Would be nice if we could move these two to nbt too:
                                 as.setBasePlate(false);
