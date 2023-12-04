@@ -214,6 +214,7 @@ public class Effects extends JavaPlugin {
         commandParser.addCommand(new HookRemoveBlockBreak());
         commandParser.addCommand(new HookRemoveDamageOtherEntity());
         commandParser.addCommand(new HookRemoveInteract());
+        commandParser.addCommand(new HookRemoveMove());
         commandParser.addCommand(new HookRemoveProjectileLaunch());
         commandParser.addCommand(new HookRemoveProjectileHit());
         commandParser.addCommand(new InteractHookPlayerCommand());
