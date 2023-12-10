@@ -1,5 +1,6 @@
 package org.cubeville.effects.managers;
 
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -41,6 +42,13 @@ public class ParticleEffectProjectileRunnable extends BukkitRunnable implements 
         if(projectile.isDead()) {
             abort();
             return;
+        }
+        if(projectile instanceof AbstractArrow) {
+            AbstractArrow arrow = (AbstractArrow) projectile;
+            if(arrow.getAttachedBlock() != null) {
+                abort();
+                return;
+            }
         }
         if(step == 100) {
             abort();
