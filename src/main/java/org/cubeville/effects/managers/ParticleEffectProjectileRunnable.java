@@ -42,7 +42,6 @@ public class ParticleEffectProjectileRunnable extends BukkitRunnable implements 
             abort();
             return;
         }
-        step++;
         if(step == 100) {
             abort();
             return;
@@ -54,6 +53,7 @@ public class ParticleEffectProjectileRunnable extends BukkitRunnable implements 
             abort();
             return;
         }
+        step++;
     }
     
 }
