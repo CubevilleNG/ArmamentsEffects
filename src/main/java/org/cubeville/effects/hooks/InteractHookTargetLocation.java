@@ -80,7 +80,7 @@ public class InteractHookTargetLocation implements InteractHook
 
     public boolean process(PlayerInteractEvent event) {
 	Player player = event.getPlayer();
-        Entity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000);
+        Entity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000, 10.0);
 
         if(target != null) {
             Location loc = target.getLocation().clone();

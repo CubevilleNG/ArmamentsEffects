@@ -87,7 +87,7 @@ public class InteractHookTargetLocationParticlePlayer implements InteractHook
 
     public boolean process(PlayerInteractEvent event) {
 	Player player = event.getPlayer();
-        Entity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000);
+        Entity target = PlayerUtil.findTargetEntity(player, player.getNearbyEntities(10, 10, 10), 1000, 10.0);
         if(target == null) {
             return true;
         }

@@ -10,12 +10,13 @@ import org.bukkit.util.Vector;
 
 public class PlayerUtil
 {
-    public static LivingEntity findTargetEntity(Player player, List<Entity> entityList, double minAngle) {
+    public static LivingEntity findTargetEntity(Player player, List<Entity> entityList, double minAngle, double maxDist) {
         LivingEntity ret = null;
+        double maxDistSquared = maxDist * maxDist;
         for(Entity e: entityList) {
             if(!e.isDead()) {
-                double dist = e.getLocation().distance(player.getLocation());
-                if(dist < 10) {
+                double dist = e.getLocation().distanceSquared(player.getLocation());
+                if(dist <= maxDistSquared) {
                     if(e instanceof LivingEntity) {
                         if(e.getType() == EntityType.PLAYER || e.getType() == EntityType.VILLAGER || e.getType() == EntityType.PIG || e.getType() == EntityType.COW || e.getType() == EntityType.SHEEP || e.getType() == EntityType.CHICKEN || e.getType() == EntityType.HORSE || e.getType() == EntityType.MUSHROOM_COW || e.getType() == EntityType.WOLF || e.getType() == EntityType.OCELOT || e.getType() == EntityType.DONKEY) {
                             Vector targetDirection = e.getLocation().subtract(player.getLocation()).toVector();
